@@ -1,2 +1,2 @@
-System.out.print(nignignigningig);
+System.out.print(nig);
 
