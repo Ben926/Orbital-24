@@ -1,2 +1,2 @@
-nignignigningig
+System.out.print(nignignigningig);
 
