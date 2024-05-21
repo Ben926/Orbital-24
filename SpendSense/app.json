@@ -1,5 +1,6 @@
 {
   "expo": {
+    "entryPoint": "./src/app/index.tsx",
     "name": "SpendSense",
     "slug": "SpendSense",
     "version": "1.0.0",
