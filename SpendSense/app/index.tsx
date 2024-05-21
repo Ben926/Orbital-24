@@ -2,6 +2,8 @@ import { Text, View, Image, Button, ScrollView, StyleSheet } from "react-native"
 import { useCallback, useState } from "react";
 import LogInForm from "../components/LogInForm";
 import SignUpForm from "../components/SignUpForm";
+import supabase from "../supabase/supabase.js";
+import { HelloWave } from "@/components/HelloWave";
 
 const logoImg = require("../assets/images/spendsense-logo.png");
 
@@ -24,6 +26,7 @@ export default function Index() {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Image source={logoImg} style={styles.logo} />
+        <HelloWave />
         <Text style={styles.welcomeText}>Welcome to SpendSense!</Text>
         {!hasPressed && (
           <>
@@ -31,8 +34,8 @@ export default function Index() {
             {SignUpButton}
           </>
         )}
-        {isLogInVisible && <LogInForm login={LogInButton} signup={SignUpButton}/>}
-        {isSignUpVisible && <SignUpForm login={LogInButton} signup={SignUpButton}/>}
+        {isLogInVisible && <LogInForm/>}
+        {isSignUpVisible && <SignUpForm/>}
       </ScrollView>
     </View>
   );
