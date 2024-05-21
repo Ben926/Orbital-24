@@ -54,7 +54,7 @@ const SignUpForm = () => {
         secureTextEntry
       />
       <Button title="Sign Up" onPress={handleSignup} />
-      <Pressable style={styles.button} onPress={() => router.replace("StartPage")}>
+      <Pressable style={styles.button} onPress={() => router.back()}>
         <Text style={styles.buttonText}>Back</Text>
       </Pressable>
     </View>
