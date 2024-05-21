@@ -13,6 +13,7 @@ const LogInForm = () => {
       Alert.alert("Login Error", error.message);
     } else {
       Alert.alert("Success", "Logged in successfully");
+      router.replace("Home");
     }
   };
 
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: 'white',
     color: "black",
+    fontFamily: "Verdana"
   },
   button: {
     backgroundColor: '#007bff',

@@ -37,24 +37,30 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
+    color: '#333333', // Dark grey color for default text
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
     fontWeight: '600',
+    color: '#333333', // Dark grey color for semi-bold text
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    lineHeight: 32,
+    lineHeight: 40, // Increased line height for better readability
+    color: '#0a7ea4', // Blue color matching the logo
   },
   subtitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    lineHeight: 28, // Increased line height for better readability
+    color: '#008000', // Green color matching the logo
   },
   link: {
-    lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+    lineHeight: 30,
+    color: '#0a7ea4', // Blue color for links
+    textDecorationLine: 'underline', // Underline for links to emphasize clickable text
   },
 });

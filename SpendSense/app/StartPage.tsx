@@ -25,7 +25,7 @@ const Start = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 300,
-    height: 300,
+    height: 300
   },
   welcomeText: {
     fontFamily: 'Verdana',
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     textAlign: 'center',
+    fontFamily: "Verdana"
   },
 });
 

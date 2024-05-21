@@ -3,6 +3,8 @@ import { useState } from "react";
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
 
+const x = () => {console.log("hi")};
+
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -92,6 +94,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: "Verdana"
   },
 });
 
