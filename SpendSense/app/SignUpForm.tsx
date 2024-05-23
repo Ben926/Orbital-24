@@ -1,9 +1,9 @@
-import { Text, TextInput, View, StyleSheet, Button, Alert, Pressable } from "react-native";
+import { Text, TextInput, View, StyleSheet, Button, Alert, Pressable, Image} from "react-native";
 import { useState } from "react";
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
 
-const x = () => {console.log("hi")};
+const logoImg = require("../assets/images/spendsense-logo.png");
 
 const SignUpForm = () => {
   const [email, setEmail] = useState("");
@@ -27,6 +27,9 @@ const SignUpForm = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.logoContainer}>
+      <Image source={logoImg} style={styles.logo} />
+      </View>
       <TextInput
         textAlign="center"
         placeholderTextColor="black"
@@ -68,6 +71,10 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'white',
     flex: 1
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 50, 
   },
   input: {
     height: 40,
@@ -117,6 +124,10 @@ const styles = StyleSheet.create({
     color: '#49D469',
     fontSize: 18,
     fontFamily: "Figtree-Bold"
+  },
+  logo: {
+    width: 300,
+    height: 300,
   },
 });
 
