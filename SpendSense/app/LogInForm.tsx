@@ -17,6 +17,21 @@ const LogInForm = () => {
     }
   };
 
+  const handleForgotPassword = () => {
+    if (!email) {
+      Alert.alert("Error", "Please enter your email address to reset your password.");
+      return;
+    }
+
+    supabase.auth.resetPasswordForEmail(email)
+      .then(() => {
+        Alert.alert("Success", "Password reset email sent.");
+      })
+      .catch(error => {
+        Alert.alert("Error", error.message);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <TextInput
@@ -36,7 +51,9 @@ const LogInForm = () => {
         style={styles.input}
         secureTextEntry
       />
-      
+      <Pressable onPress={handleForgotPassword}>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+      </Pressable>
       <Pressable style={styles.button2} onPress={handleLogin}>
         <Text style={styles.buttonText2}>Log In</Text>
       </Pressable>
@@ -94,15 +111,20 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: "Figtree"
+    fontFamily: "Figtree-Bold"
   },
 
   buttonText2: {
     color: '#49D469',
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: "Figtree"
+    fontFamily: "Figtree-Bold"
+  },
+  forgotPasswordText: {
+    color: '#007bff',
+    fontSize: 16,
+    fontFamily: "Figtree",
+    textAlign: 'center',
+    marginBottom: 16,
   },
 });
 

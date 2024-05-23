@@ -8,6 +8,7 @@ export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
     'Figtree': require('../assets/fonts/Figtree-VariableFont_wght.ttf'),
+    'Figtree-Bold': require('../assets/fonts/Figtree-Bold.ttf'),
   });
 
   if (!fontsLoaded) {

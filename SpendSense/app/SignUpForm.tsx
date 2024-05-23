@@ -110,15 +110,13 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: "Figtree"
+    fontFamily: "Figtree-Bold"
   },
 
   buttonText2: {
     color: '#49D469',
     fontSize: 18,
-    fontWeight: 'bold',
-    fontFamily: "Figtree"
+    fontFamily: "Figtree-Bold"
   },
 });
 
