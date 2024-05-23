@@ -36,7 +36,10 @@ const LogInForm = () => {
         style={styles.input}
         secureTextEntry
       />
-      <Button title="Log In" onPress={handleLogin} />
+      
+      <Pressable style={styles.button2} onPress={handleLogin}>
+        <Text style={styles.buttonText2}>Log In</Text>
+      </Pressable>
       <Pressable style={styles.button} onPress={() => router.back()}>
         <Text style={styles.buttonText}>Back</Text>
       </Pressable>
@@ -47,7 +50,7 @@ const LogInForm = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: 'white',
     flex: 1,
   },
   input: {
@@ -59,10 +62,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: 'white',
     color: "black",
-    fontFamily: "Verdana"
+    fontFamily: "Figtree"
   },
   button: {
-    backgroundColor: '#007bff',
+    backgroundColor: '#49D469',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 8,
@@ -74,10 +77,32 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
+
+  button2: {
+    backgroundColor: 'transparent',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
   buttonText: {
-    color: 'white',
+    color: 'black',
     fontSize: 18,
     fontWeight: 'bold',
+    fontFamily: "Figtree"
+  },
+
+  buttonText2: {
+    color: '#49D469',
+    fontSize: 18,
+    fontWeight: 'bold',
+    fontFamily: "Figtree"
   },
 });
 
