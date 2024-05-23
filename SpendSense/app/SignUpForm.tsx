@@ -68,13 +68,14 @@ const SignUpForm = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    paddingBottom: 16,
+    paddingLeft: 16,
+    paddingRight: 16,
     backgroundColor: 'white',
     flex: 1
   },
   logoContainer: {
     alignItems: 'center',
-    marginTop: 50, 
   },
   input: {
     height: 40,
