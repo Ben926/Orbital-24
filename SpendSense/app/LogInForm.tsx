@@ -1,13 +1,15 @@
-import { Text, TextInput, View, StyleSheet, Button, Alert, Pressable, Image, Dimensions } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Text, TextInput, View, StyleSheet, Alert, Pressable, Image, TouchableOpacity } from "react-native";
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
+import { Ionicons } from '@expo/vector-icons'; // Import Ionicons from @expo/vector-icons
 
 const logoImg = require("../assets/images/spendsense-logo.png");
 
 const LogInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // State to manage password visibility
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -37,7 +39,7 @@ const LogInForm = () => {
   return (
     <View style={styles.container}>
       <View style={styles.logoContainer}>
-      <Image source={logoImg} style={styles.logo} />
+        <Image source={logoImg} style={styles.logo} />
       </View>
       <TextInput
         textAlign="center"
@@ -47,15 +49,20 @@ const LogInForm = () => {
         onChangeText={setEmail}
         style={styles.input}
       />
-      <TextInput
-        textAlign="center"
-        placeholderTextColor="black"
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          textAlign="center"
+          placeholderTextColor="black"
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          style={styles.inputWithButton}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.toggleButton}>
+          <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="black" />
+        </TouchableOpacity>
+      </View>
       <Pressable onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </Pressable>
@@ -80,6 +87,11 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
   },
+  inputContainer: {
+    position: 'relative',
+    width: '100%',
+    marginBottom: 16,
+  },
   input: {
     height: 40,
     borderColor: "gray",
@@ -89,7 +101,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: 'white',
     color: "black",
-    fontFamily: "Figtree"
+    fontFamily: "Figtree",
+  },
+  inputWithButton: {
+    height: 40,
+    borderColor: "gray",
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    backgroundColor: 'white',
+    color: "black",
+    fontFamily: "Figtree",
+  },
+  toggleButton: {
+    position: 'absolute',
+    right: 10,
+    top: 8, 
   },
   button: {
     backgroundColor: '#49D469',
@@ -104,7 +131,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
-
   button2: {
     backgroundColor: 'transparent',
     paddingVertical: 0,
@@ -121,13 +147,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'black',
     fontSize: 18,
-    fontFamily: "Figtree-Bold"
+    fontFamily: "Figtree-Bold",
   },
-
   buttonText2: {
     color: '#49D469',
     fontSize: 18,
-    fontFamily: "Figtree-Bold"
+    fontFamily: "Figtree-Bold",
   },
   forgotPasswordText: {
     color: '#007bff',
