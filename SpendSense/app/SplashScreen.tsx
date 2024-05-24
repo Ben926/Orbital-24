@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, Image } from 'react-native';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { Audio } from 'expo-av';
 
 
 interface SplashScreenProps {
@@ -9,15 +10,25 @@ interface SplashScreenProps {
 
 const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   const logoImg = require('../assets/images/spendsense-logo.png');
-
+  const intro = require('../assets/sounds/intro.mp3');
   const opacity = useSharedValue(0);
 
   useEffect(() => {
+
+    const playSound = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        intro 
+      );
+      await sound.playAsync();
+      return sound;
+    };
     
     const fadeIn = withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.ease) });
     const fadeOut = withTiming(0, { duration: 1000, easing: Easing.inOut(Easing.ease) });
 
     opacity.value = fadeIn;
+
+    const soundPromise = playSound();
 
     
 
