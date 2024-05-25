@@ -1,4 +1,4 @@
-import { Text, TextInput, View, StyleSheet, Button, Alert, Pressable, Image} from "react-native";
+import { Text, TextInput, View, Alert, Pressable, Image } from "react-native";
 import { useState } from "react";
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
@@ -18,19 +18,28 @@ const SignUpForm = () => {
       return;
     }
 
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { data, error } = await supabase.auth.signUp({ email, password });
 
     if (error) {
       Alert.alert("Signup Error", error.message);
     } else {
-      Alert.alert("Success", "Signed up successfully");
+      const userId = data.user.id;
+
+      const { error: tableError } = await supabase
+        .rpc('create_user_table', { user_id: userId });
+
+      if (tableError) {
+        Alert.alert("Table Creation Error", tableError.message);
+      } else {
+        Alert.alert("Success", "Signed up!");
+      }
     }
   };
 
   return (
     <SafeAreaView style={styles.loginContainer}>
       <View style={styles.logoContainer}>
-      <Image source={logoImg} style={styles.logo} />
+        <Image source={logoImg} style={styles.logo} />
       </View>
       <TextInput
         textAlign="center"
