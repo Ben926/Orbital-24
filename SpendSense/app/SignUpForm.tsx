@@ -2,6 +2,8 @@ import { Text, TextInput, View, StyleSheet, Button, Alert, Pressable, Image} fro
 import { useState } from "react";
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
+import styles from '../styles/styles';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const logoImg = require("../assets/images/spendsense-logo.png");
 
@@ -26,7 +28,7 @@ const SignUpForm = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.loginContainer}>
       <View style={styles.logoContainer}>
       <Image source={logoImg} style={styles.logo} />
       </View>
@@ -56,80 +58,14 @@ const SignUpForm = () => {
         style={styles.input}
         secureTextEntry
       />
-      <Pressable style={styles.button2} onPress={handleSignup}>
-        <Text style={styles.buttonText2}>Sign Up</Text>
+      <Pressable style={styles.transparentButton} onPress={handleSignup}>
+        <Text style={styles.transparentButtonText}>Sign Up</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => router.back()}>
         <Text style={styles.buttonText}>Back</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 16,
-    paddingLeft: 16,
-    paddingRight: 16,
-    backgroundColor: 'white',
-    flex: 1
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: "gray",
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    marginBottom: 16,
-    borderRadius: 8,
-    backgroundColor: 'white',
-    color: "black",
-    fontFamily: "Figtree"
-  },
-  button: {
-    backgroundColor: '#49D469',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    marginVertical: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-
-  button2: {
-    backgroundColor: 'transparent',
-    paddingVertical: 0,
-    paddingHorizontal: 0,
-    borderRadius: 0,
-    marginVertical: 10,
-    alignItems: 'center',
-    shadowColor: 'transparent',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
-  },
-  buttonText: {
-    color: 'black',
-    fontSize: 18,
-    fontFamily: "Figtree-Bold"
-  },
-
-  buttonText2: {
-    color: '#49D469',
-    fontSize: 18,
-    fontFamily: "Figtree-Bold"
-  },
-  logo: {
-    width: 300,
-    height: 300,
-  },
-});
 
 export default SignUpForm;

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, Image } from 'react-native';
 import Animated, { Easing, useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { Audio } from 'expo-av';
+import styles from '../styles/styles';
 
 
 interface SplashScreenProps {
@@ -28,7 +29,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
 
     opacity.value = fadeIn;
 
-    const soundPromise = playSound();
+    playSound();
 
     
 
@@ -47,24 +48,12 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onFinish }) => {
   });
 
   return (
-      <Animated.View style={[styles.container, animatedStyle]}>
+      <Animated.View style={[styles.splashscreenContainer, animatedStyle]}>
         <Image source={logoImg} style={styles.logo} />
       </Animated.View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 100
-  },
-  logo: {
-    width: 300,
-    height: 300,
-  },
-});
+
 
 export default SplashScreen;

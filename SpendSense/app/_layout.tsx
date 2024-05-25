@@ -15,10 +15,10 @@ export default function RootLayout() {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
   return (<Stack>
-    <Stack.Screen name = "SplashScreen" options = {{title: ""}}></Stack.Screen>
-    <Stack.Screen name = "index" options = {{title: ""}}></Stack.Screen>
-    <Stack.Screen name = "SignUpForm" options = {{title: ""}}></Stack.Screen>
-    <Stack.Screen name = "LogInForm" options = {{title: ""}}></Stack.Screen>
+    <Stack.Screen name = "SplashScreen" options = {{title: "", headerShown: false}}></Stack.Screen>
+    <Stack.Screen name = "index" options = {{title: "", headerShown: false}}></Stack.Screen>
+    <Stack.Screen name = "SignUpForm" options = {{title: "", headerShown: false}}></Stack.Screen>
+    <Stack.Screen name = "LogInForm" options = {{title: "", headerShown: false}}></Stack.Screen>
     <Stack.Screen name = "(home)" options = {{title: "", headerShown: true}} ></Stack.Screen>
   </Stack>);
 }
