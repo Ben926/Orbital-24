@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#49D469',
     paddingVertical: 12,
-    paddingHorizontal: 160,
+    paddingHorizontal: 150,
     borderRadius: 8,
     marginVertical: 10,
     alignItems: 'center',

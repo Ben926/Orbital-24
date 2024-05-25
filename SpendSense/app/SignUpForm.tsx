@@ -24,15 +24,35 @@ const SignUpForm = () => {
       Alert.alert("Signup Error", error.message);
     } else {
       const userId = data.user.id;
+      const defaultCategories = [
+        'Food',
+        'Transport',
+        'Shopping',
+        'Entertainment',
+        'Medical',
+        'Housing',
+        'Income'
+      ];
 
       const { error: tableError } = await supabase
         .rpc('create_user_table', { user_id: userId });
 
+      const { error: categoryError } = await supabase
+        .from('categories')
+        .insert(defaultCategories.map(category => ({
+          user_id: userId,
+          category_name: category
+        })));
+
       if (tableError) {
-        Alert.alert("Table Creation Error", tableError.message);
-      } else {
-        Alert.alert("Success", "Signed up!");
+        Alert.alert("Error", tableError.message);
       }
+
+      if (categoryError) {
+        Alert.alert("Error", categoryError.message);
+      }
+      
+      Alert.alert("Success!", "Account created successfully")
     }
   };
 
