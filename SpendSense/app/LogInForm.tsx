@@ -12,12 +12,13 @@ const LogInForm = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); 
   const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       Alert.alert("Login Error", error.message);
     } else {
+      const userID = data.user.id;
       Alert.alert("Success", "Logged in successfully");
-      router.replace("/HomePage");
+      router.replace(`${userID}`);
     }
   };
 

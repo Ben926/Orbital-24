@@ -41,7 +41,7 @@ const SignUpForm = () => {
         .from('categories')
         .insert(defaultCategories.map(category => ({
           user_id: userId,
-          category_name: category
+          name: category
         })));
 
       if (tableError) {
