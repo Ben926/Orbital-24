@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     fontFamily: "Figtree",
     color: 'black',
     fontSize: 16,
-    marginRight: 5, 
+    marginRight: 5,
   },
   input: {
     height: 40,
@@ -72,12 +72,12 @@ const styles = StyleSheet.create({
   toggleButton: {
     position: 'absolute',
     right: 10,
-    top: 8, 
+    top: 8,
   },
   button: {
     backgroundColor: '#49D469',
     paddingVertical: 12,
-    paddingHorizontal: 150,
+    paddingHorizontal: 100,
     borderRadius: 8,
     marginVertical: 10,
     alignItems: 'center',
@@ -133,6 +133,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 10,
+  },
+  datetimepicker: {
+    flexDirection: 'row',
+    justifyContent: 'center'
   }
 });
 
