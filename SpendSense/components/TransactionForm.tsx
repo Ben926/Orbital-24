@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TextInput, Alert, Platform, Text, TouchableOpacity } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import { ScrollView, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
@@ -21,10 +20,8 @@ const CreateTransactionForm = ({ userID }) => {
     const initialDate = new Date();
     initialDate.setHours(initialDate.getHours() + 8);
     return initialDate;
-  }); // make it singapore time by default
+  });
   const [showDateTimePicker, setShowDateTimePicker] = useState<boolean>(false);
-
-  
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -84,65 +81,71 @@ const CreateTransactionForm = ({ userID }) => {
     setDate(currentTime);
   };
 
+  const renderCategory = ({ item }: { item: Category }) => (
+    <TouchableOpacity
+      style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
+      onPress={() => setSelectedCategory(item.name)}
+    >
+      <Text style={styles.categoryText}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <ScrollView>
-    <View style={styles.loginContainer}>
-      <Text style={styles.welcomeText}>Create Transaction</Text>
-      <View style={styles.loginPasswordContainer}>
-        <Picker
-          selectedValue={selectedCategory}
-          onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-        >
-          <Picker.Item label="Select a category" value="" />
-          {categories
-            .filter(cat => cat.user_id === userID)
-            .map((cat) => (
-              <Picker.Item key={cat.id} label={cat.name} value={cat.name} />
-            ))}
-        </Picker>
-      </View>
-      <TextInput
-        style={styles.input}
-        placeholder="Amount"
-        placeholderTextColor= "grey"
-        textAlign='center'
-        keyboardType="numeric"
-        value={amount}
-        onChangeText={setAmount}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
-        placeholderTextColor= "grey"
-        textAlign='center'
-        value={description}
-        onChangeText={setDescription}
-      />
-      <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
-        <Text style={styles.buttonText}>Backdate Transaction</Text>
-      </TouchableOpacity>
-      <View style= {styles.datetimepicker}>
-      {showDateTimePicker && (
-        <DateTimePicker
-          value={date}
-          mode="date"
-          display="default"
-          onChange={onDateChange}
+      <View style={styles.loginContainer}>
+        <Text style={styles.welcomeText}>Create Transaction</Text>
+        <View style={styles.categoryGridContainer}>
+          <FlatList
+            data={categories.filter(cat => cat.user_id === userID)}
+            renderItem={renderCategory}
+            keyExtractor={(item) => item.id}
+            numColumns={3}
+            contentContainerStyle={styles.flatList}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Amount"
+          placeholderTextColor="grey"
+          textAlign="center"
+          keyboardType="numeric"
+          value={amount}
+          onChangeText={setAmount}
         />
-      )}
-      {showDateTimePicker && (
-        <DateTimePicker
-          value={date}
-          mode="time"
-          display="default"
-          onChange={onTimeChange}
+        <TextInput
+          style={styles.input}
+          placeholder="Description"
+          placeholderTextColor="grey"
+          textAlign="center"
+          value={description}
+          onChangeText={setDescription}
         />
-      )}
+        <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
+          <Text style={styles.buttonText}>Backdate Transaction</Text>
+        </TouchableOpacity>
+        <View style={styles.datetimepicker}>
+          {showDateTimePicker && (
+            <DateTimePicker
+              value={date}
+              mode="date"
+              display="default"
+              onChange={onDateChange}
+            />
+          )}
+          {showDateTimePicker && (
+            <DateTimePicker
+              value={date}
+              mode="time"
+              display="default"
+              onChange={onTimeChange}
+            />
+          )}
+        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Submit</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Submit</Text>
-      </TouchableOpacity>
-    </View>
     </ScrollView>
   );
 };

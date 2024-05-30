@@ -137,7 +137,42 @@ const styles = StyleSheet.create({
   datetimepicker: {
     flexDirection: 'row',
     justifyContent: 'center'
-  }
+  },
+  panelContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    marginVertical: 16,
+  },
+  categorySquare: {
+    width: 90,
+    height: 90,
+    backgroundColor: '#f0f0f0',
+    margin: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  selectedCategory: {
+    backgroundColor: '#49D469',
+  },
+  categoryText: {
+    color: 'black',
+    textAlign: 'center',
+    fontFamily: "Figtree-Bold",
+  },
+  flatList: {
+    paddingHorizontal: 16,
+  },
+  categoryGridContainer: {
+    height: 300, 
+    marginBottom: 16
+  },
 });
 
 export default styles;
