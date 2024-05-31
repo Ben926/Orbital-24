@@ -171,7 +171,10 @@ const styles = StyleSheet.create({
   },
   categoryGridContainer: {
     height: 300, 
-    marginBottom: 16
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 8,
   },
   transactionContainer: {
     flex: 1,
@@ -204,7 +207,30 @@ const styles = StyleSheet.create({
   transactionDescription: {
     fontSize: 14,
     marginTop: 8,
-  }
+  },
+  addCategorySquare: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e0e0e0',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)', 
+  },
+  modalView: {
+    width: '80%', 
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 20,
+    
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
+  },
 });
 
 export default styles;

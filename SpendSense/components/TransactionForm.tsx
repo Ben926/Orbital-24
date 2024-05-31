@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Modal, ScrollView, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
@@ -22,6 +22,8 @@ const CreateTransactionForm = ({ userID }) => {
     return initialDate;
   });
   const [showDateTimePicker, setShowDateTimePicker] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [newCategory, setNewCategory] = useState<string>('');
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -89,20 +91,48 @@ const CreateTransactionForm = ({ userID }) => {
       <Text style={styles.categoryText}>{item.name}</Text>
     </TouchableOpacity>
   );
+  const handleAddCategory = async () => {
+    if (!newCategory.trim()) {
+      Alert.alert('Please enter a category name');
+      return;
+    }
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .insert([{ user_id: userID, name: newCategory }])
+        .select();
+      if (error) {
+        console.error('Error adding category:', error);
+      } else {
+        setCategories([...categories, ...data]);
+        setNewCategory('');
+        setModalVisible(false);
+      }
+    } catch (err) {
+      console.error('Unexpected error adding category:', err);
+    }
+  };
 
   return (
     <ScrollView>
       <View style={styles.loginContainer}>
         <Text style={styles.welcomeText}>Create Transaction</Text>
         <View style={styles.categoryGridContainer}>
-          <FlatList
-            data={categories.filter(cat => cat.user_id === userID)}
-            renderItem={renderCategory}
-            keyExtractor={(item) => item.id}
-            numColumns={3}
-            contentContainerStyle={styles.flatList}
-            showsVerticalScrollIndicator={false}
-          />
+        <FlatList
+        data={[...categories.filter(cat => cat.user_id === userID), { id: 'add-new', user_id: userID, name: 'Add New' }]}
+        renderItem={({ item }) => item.id === 'add-new' ? (
+          <TouchableOpacity
+            style={[styles.categorySquare, styles.addCategorySquare]}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.categoryText}>+ Add</Text>
+          </TouchableOpacity>
+        ) : renderCategory({ item })}
+        keyExtractor={(item) => item.id}
+        numColumns={3}
+        contentContainerStyle={styles.flatList}
+        showsVerticalScrollIndicator={false}
+        />
         </View>
         <TextInput
           style={styles.input}
@@ -146,6 +176,33 @@ const CreateTransactionForm = ({ userID }) => {
           <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(!modalVisible)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalView}>
+            <TextInput
+              style={styles.input}
+              placeholder="New Category"
+              placeholderTextColor="grey"
+              textAlign="center"
+              value={newCategory}
+              onChangeText={setNewCategory}
+            />
+            <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
+              <Text style={styles.buttonText}>Add Category</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.buttonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      
     </ScrollView>
   );
 };
