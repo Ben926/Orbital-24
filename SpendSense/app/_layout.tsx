@@ -1,10 +1,8 @@
-import { Redirect, Stack} from "expo-router";
+import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
 import { ActivityIndicator } from "react-native";
 
-
-
-export default function RootLayout() {
+export default function Layout() {
 
   const [fontsLoaded] = useFonts({
     'Figtree': require('../assets/fonts/Figtree-VariableFont_wght.ttf'),
@@ -19,6 +17,6 @@ export default function RootLayout() {
     <Stack.Screen name = "index" options = {{title: "", headerShown: false}}></Stack.Screen>
     <Stack.Screen name = "SignUpForm" options = {{title: "", headerShown: false}}></Stack.Screen>
     <Stack.Screen name = "LogInForm" options = {{title: "", headerShown: false}}></Stack.Screen>
-    <Stack.Screen name = "(home)" options = {{title: "", headerShown: true}} ></Stack.Screen>
+    <Stack.Screen name = "(home)" options = {{title: "", headerShown: false}} ></Stack.Screen>
   </Stack>);
 }
