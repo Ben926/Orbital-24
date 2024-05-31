@@ -1,9 +1,8 @@
-import { Tabs } from "expo-router"
+import { Stack } from "expo-router";
 
-const TabsLayout = () => {
-    return <Tabs>
-        <Tabs.Screen name = "[userID]" options = {{title: "[id]", headerShown: false}}></Tabs.Screen>
-    </Tabs>
+export default function Layout() {
+    return <Stack>
+        <Stack.Screen name = "[userID]" options = {{title: "[userID]", headerShown: false}}></Stack.Screen>
+        <Stack.Screen name = "ViewAll" options = {{title: "ViewAll", headerShown: false}}></Stack.Screen>
+    </Stack>
 }
-
-export default TabsLayout;

@@ -173,6 +173,38 @@ const styles = StyleSheet.create({
     height: 300, 
     marginBottom: 16
   },
+  transactionContainer: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#fff',
+  },
+  transactionItem: {
+    padding: 20,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+  },
+  transactionDate: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  transactionCategory: {
+    fontSize: 14,
+    color: '#888',
+  },
+  transactionAmount: {
+    fontSize: 18,
+    color: '#000',
+  },
+  transactionTimestamp: {
+    flex: 1,
+    textAlign: 'right',
+  },
+  transactionDescription: {
+    fontSize: 14,
+    marginTop: 8,
+  }
 });
 
 export default styles;
