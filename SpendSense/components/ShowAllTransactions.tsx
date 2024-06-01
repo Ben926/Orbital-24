@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import supabase from "../supabase/supabase";
 import styles from '@/styles/styles';
 
@@ -49,8 +49,33 @@ const ShowAllTransactions = ({ userID }) => {
     return date.toLocaleDateString('en-US', options);
   };
 
+  const deleteTransaction = async (transactionID: string) => {
+    try {
+      let { error } = await supabase
+        .from(`raw_records_${userID.replace(/-/g, '')}`)
+        .delete()
+        .eq('id', transactionID);
+
+      if (error) {
+        console.error('Error deleting transaction', error);
+      } else {
+        setTransactions((prevTransactions) =>
+          prevTransactions.filter((transaction) => transaction.id !== transactionID)
+        );
+      }
+    } catch (error) {
+      console.error('Error deleting transaction', error);
+    }
+  };
+
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => deleteTransaction(item.id)}
+      >
+        <Text style={styles.deleteButtonText}>x</Text>
+      </TouchableOpacity>
       <Text style={styles.transactionDate}>{item.date}</Text>
       <Text style={styles.transactionCategory}>{item.category}</Text>
       <Text style={styles.transactionAmount}>${item.amount}</Text>

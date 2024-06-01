@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   categoryGridContainer: {
-    height: 300, 
+    height: 300,
     marginBottom: 16,
     borderWidth: 1,
     borderColor: 'gray',
@@ -218,19 +218,31 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)', 
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   modalView: {
-    width: '80%', 
+    width: '80%',
     backgroundColor: 'white',
     borderRadius: 8,
     padding: 20,
-    
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'red',
+    borderRadius: 12,
+    padding: 3,
+  },
+  deleteButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

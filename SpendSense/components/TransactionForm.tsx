@@ -170,7 +170,6 @@ const CreateTransactionForm = ({ userID }) => {
             mode="time"
             display="default"
             onChange={onTimeChange}
-            dateFormat= "day month year"
           />
         )}
       </View>
