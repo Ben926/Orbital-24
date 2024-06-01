@@ -165,6 +165,7 @@ const styles = StyleSheet.create({
     color: 'black',
     textAlign: 'center',
     fontFamily: "Figtree-Bold",
+    fontSize: 12
   },
   flatList: {
     paddingHorizontal: 16,

@@ -12,15 +12,16 @@ type Category = {
 };
 
 const CreateTransactionForm = ({ userID }) => {
+  const setCurrentDate = () => {
+    const initialDate = new Date();
+    initialDate.setHours(initialDate.getHours() + 8);
+    return initialDate;
+  };
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [description, setDescription] = useState<string>('');
-  const [date, setDate] = useState<Date>(() => {
-    const initialDate = new Date();
-    initialDate.setHours(initialDate.getHours() + 8);
-    return initialDate;
-  });
+  const [date, setDate] = useState<Date>(new Date());
   const [showDateTimePicker, setShowDateTimePicker] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [newCategory, setNewCategory] = useState<string>('');
@@ -46,7 +47,7 @@ const CreateTransactionForm = ({ userID }) => {
       amount: isIncome ? parseFloat(amount) : -parseFloat(amount),
       category: selectedCategory,
       description,
-      timestamp: date
+      timestamp: showDateTimePicker ? date : setCurrentDate()
     };
     if (!amount || !selectedCategory || !description) {
       Alert.alert("Please fill up all fields!");
@@ -64,6 +65,7 @@ const CreateTransactionForm = ({ userID }) => {
           setAmount('');
           setDescription('');
           setDate(new Date());
+          setShowDateTimePicker(false);
         }
       } catch (err) {
         console.error('Unexpected error creating transaction:', err);
@@ -114,68 +116,67 @@ const CreateTransactionForm = ({ userID }) => {
   };
 
   return (
-    <ScrollView>
-      <View style={styles.loginContainer}>
-        <Text style={styles.welcomeText}>Create Transaction</Text>
-        <View style={styles.categoryGridContainer}>
+    <View style={styles.loginContainer}>
+      <Text style={styles.welcomeText}>Create Transaction</Text>
+      <View style={styles.categoryGridContainer}>
         <FlatList
-        data={[...categories.filter(cat => cat.user_id === userID), { id: 'add-new', user_id: userID, name: 'Add New' }]}
-        renderItem={({ item }) => item.id === 'add-new' ? (
-          <TouchableOpacity
-            style={[styles.categorySquare, styles.addCategorySquare]}
-            onPress={() => setModalVisible(true)}
-          >
-            <Text style={styles.categoryText}>+ Add</Text>
-          </TouchableOpacity>
-        ) : renderCategory({ item })}
-        keyExtractor={(item) => item.id}
-        numColumns={3}
-        contentContainerStyle={styles.flatList}
-        showsVerticalScrollIndicator={false}
+          data={[...categories.filter(cat => cat.user_id === userID), { id: 'add-new', user_id: userID, name: 'Add New' }]}
+          renderItem={({ item }) => item.id === 'add-new' ? (
+            <TouchableOpacity
+              style={[styles.categorySquare, styles.addCategorySquare]}
+              onPress={() => setModalVisible(true)}
+            >
+              <Text style={styles.categoryText}>+ Add</Text>
+            </TouchableOpacity>
+          ) : renderCategory({ item })}
+          keyExtractor={(item) => item.id}
+          numColumns={3}
+          contentContainerStyle={styles.flatList}
+          showsVerticalScrollIndicator={false}
         />
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Amount"
-          placeholderTextColor="grey"
-          textAlign="center"
-          keyboardType="numeric"
-          value={amount}
-          onChangeText={setAmount}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Description"
-          placeholderTextColor="grey"
-          textAlign="center"
-          value={description}
-          onChangeText={setDescription}
-        />
-        <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
-          <Text style={styles.buttonText}>Backdate Transaction</Text>
-        </TouchableOpacity>
-        <View style={styles.datetimepicker}>
-          {showDateTimePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              display="default"
-              onChange={onDateChange}
-            />
-          )}
-          {showDateTimePicker && (
-            <DateTimePicker
-              value={date}
-              mode="time"
-              display="default"
-              onChange={onTimeChange}
-            />
-          )}
-        </View>
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Submit</Text>
-        </TouchableOpacity>
       </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Amount"
+        placeholderTextColor="grey"
+        textAlign="center"
+        keyboardType="numeric"
+        value={amount}
+        onChangeText={setAmount}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Description"
+        placeholderTextColor="grey"
+        textAlign="center"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
+        <Text style={styles.buttonText}>Backdate Transaction</Text>
+      </TouchableOpacity>
+      <View style={styles.datetimepicker}>
+        {showDateTimePicker && (
+          <DateTimePicker
+            value={date}
+            mode="date"
+            display="default"
+            onChange={onDateChange}
+          />
+        )}
+        {showDateTimePicker && (
+          <DateTimePicker
+            value={date}
+            mode="time"
+            display="default"
+            onChange={onTimeChange}
+            dateFormat= "day month year"
+          />
+        )}
+      </View>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <Text style={styles.buttonText}>Submit</Text>
+      </TouchableOpacity>
       <Modal
         animationType="slide"
         transparent={true}
@@ -201,9 +202,7 @@ const CreateTransactionForm = ({ userID }) => {
           </View>
         </View>
       </Modal>
-
-      
-    </ScrollView>
+    </View>
   );
 };
 
