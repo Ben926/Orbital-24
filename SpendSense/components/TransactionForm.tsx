@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, ScrollView, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
@@ -12,10 +12,10 @@ type Category = {
 };
 
 const CreateTransactionForm = ({ userID }) => {
-  const setCurrentDate = () => {
-    const initialDate = new Date();
-    initialDate.setHours(initialDate.getHours() + 8);
-    return initialDate;
+  const getSingaporeDate = (date = new Date()) => {
+    const offsetDate = new Date(date);
+    offsetDate.setHours(offsetDate.getHours() + 8);
+    return offsetDate;
   };
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
@@ -47,7 +47,7 @@ const CreateTransactionForm = ({ userID }) => {
       amount: isIncome ? parseFloat(amount) : -parseFloat(amount),
       category: selectedCategory,
       description,
-      timestamp: showDateTimePicker ? date : setCurrentDate()
+      timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate()
     };
     if (!amount || !selectedCategory || !description) {
       Alert.alert("Please fill up all fields!");
