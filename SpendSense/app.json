@@ -28,6 +28,21 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "cc1af51a-1f7e-42cc-adad-57edf2ce99b0"
+      }
+    },
+    "owner": "ben926",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/cc1af51a-1f7e-42cc-adad-57edf2ce99b0"
     }
   }
 }
