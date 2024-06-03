@@ -244,6 +244,15 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 10,
+  },
 });
 
 export default styles;
