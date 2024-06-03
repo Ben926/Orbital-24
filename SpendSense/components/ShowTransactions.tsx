@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import supabase from "../supabase/supabase";
 import styles from '@/styles/styles';
 
@@ -12,19 +12,28 @@ type Transaction = {
   description: string;
 };
 
-const ShowAllTransactions = ({ userID }) => {
+interface ShowTransactionsProps {
+  userID: string;
+  startDate: string;
+  endDate: string;
+}
+
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [startDate, endDate]);
 
   const fetchTransactions = async () => {
+    setLoading(true);
     try {
-      let { data, error } = await supabase
+      const { data, error } = await supabase
         .from(`raw_records_${userID.replace(/-/g, '')}`)
         .select('*')
+        .gte('timestamp', startDate)
+        .lte('timestamp', endDate)
         .order('timestamp', { ascending: false });
 
       if (error) {
@@ -51,7 +60,7 @@ const ShowAllTransactions = ({ userID }) => {
 
   const deleteTransaction = async (transactionID: string) => {
     try {
-      let { error } = await supabase
+      const { error } = await supabase
         .from(`raw_records_${userID.replace(/-/g, '')}`)
         .delete()
         .eq('id', transactionID);
@@ -99,4 +108,4 @@ const ShowAllTransactions = ({ userID }) => {
   );
 };
 
-export default ShowAllTransactions;
+export default ShowTransactions;
