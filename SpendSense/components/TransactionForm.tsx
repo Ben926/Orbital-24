@@ -25,12 +25,14 @@ const CreateTransactionForm = ({ userID }) => {
   const [showDateTimePicker, setShowDateTimePicker] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [newCategory, setNewCategory] = useState<string>('');
+  const [isNewCategoryOutflow, setIsNewCategoryOutflow] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchCategories = async () => {
       let { data, error } = await supabase
         .from('categories')
-        .select('*');
+        .select('*')
+        .eq('user_id', userID);
       if (error) {
         console.error('Error fetching categories:', error);
         setCategories([]);
@@ -42,18 +44,23 @@ const CreateTransactionForm = ({ userID }) => {
   }, []);
 
   const handleSubmit = async () => {
-    const isIncome = selectedCategory === 'Income';
-    const transaction = {
-      amount: isIncome ? parseFloat(amount) : -parseFloat(amount),
-      category: selectedCategory,
-      description,
-      timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate()
-    };
     if (!amount || !selectedCategory || !description) {
       Alert.alert("Please fill up all fields!");
     } else {
+      let { data: category_record, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('user_id', userID)
+        .eq('name', selectedCategory)
+        .single()
+      const transaction = {
+        amount: category_record.outflow ? -parseFloat(amount) : parseFloat(amount),
+        category: selectedCategory,
+        description,
+        timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate()
+      };
       try {
-        const { data, error } = await supabase
+        const { error } = await supabase
           .from(`raw_records_${userID.replace(/-/g, '')}`)
           .insert([transaction])
           .select();
@@ -101,7 +108,7 @@ const CreateTransactionForm = ({ userID }) => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .insert([{ user_id: userID, name: newCategory }])
+        .insert([{ user_id: userID, name: newCategory, outflow: isNewCategoryOutflow }])
         .select();
       if (error) {
         console.error('Error adding category:', error);
@@ -120,7 +127,7 @@ const CreateTransactionForm = ({ userID }) => {
       <Text style={styles.welcomeText}>Create Transaction</Text>
       <View style={styles.categoryGridContainer}>
         <FlatList
-          data={[...categories.filter(cat => cat.user_id === userID), { id: 'add-new', user_id: userID, name: 'Add New' }]}
+          data={[...categories, { id: 'add-new', user_id: userID, name: 'Add New' }]}
           renderItem={({ item }) => item.id === 'add-new' ? (
             <TouchableOpacity
               style={[styles.categorySquare, styles.addCategorySquare]}
@@ -192,6 +199,12 @@ const CreateTransactionForm = ({ userID }) => {
               value={newCategory}
               onChangeText={setNewCategory}
             />
+            {isNewCategoryOutflow && <TouchableOpacity style={styles.button} onPress={() => setIsNewCategoryOutflow(false)}>
+              <Text style={styles.buttonText}>Outflow</Text>
+            </TouchableOpacity>}
+            {!isNewCategoryOutflow && <TouchableOpacity style={styles.button} onPress={() => setIsNewCategoryOutflow(true)}>
+              <Text style={styles.buttonText}>Inflow</Text>
+            </TouchableOpacity>}
             <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
               <Text style={styles.buttonText}>Add Category</Text>
             </TouchableOpacity>

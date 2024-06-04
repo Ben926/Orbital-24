@@ -41,7 +41,8 @@ const SignUpForm = () => {
         .from('categories')
         .insert(defaultCategories.map(category => ({
           user_id: userId,
-          name: category
+          name: category,
+          outflow: category == "Income" ? false : true 
         })));
 
       if (tableError) {
