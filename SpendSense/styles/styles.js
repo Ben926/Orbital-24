@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   indexContainer: {
     paddingTop: 16,
+    paddingBottom: 20,
     flex: 1,
     backgroundColor: "white",
   },
@@ -253,6 +254,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 10,
   },
+  transactionFormContainer: {
+    paddingTop: 80,
+    paddingBottom: 20,
+    flex: 1,
+    backgroundColor: "white",
+  }
 });
 
 export default styles;

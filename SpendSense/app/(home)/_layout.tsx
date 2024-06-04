@@ -4,5 +4,7 @@ export default function Layout() {
     return <Stack>
         <Stack.Screen name = "[userID]" options = {{title: "[userID]", headerShown: false}}></Stack.Screen>
         <Stack.Screen name = "ViewAll" options = {{title: "ViewAll", headerShown: false}}></Stack.Screen>
+        <Stack.Screen name = "BudgetPage" options = {{title: "BudgetPage", headerShown: false}}></Stack.Screen>
+        <Stack.Screen name = "GoalPage" options = {{title: "BudgetPage", headerShown: false}}></Stack.Screen>
     </Stack>
 }
