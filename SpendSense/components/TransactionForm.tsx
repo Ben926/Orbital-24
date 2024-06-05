@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions } from 'react-native';
+import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, Pressable } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
+
 
 type Category = {
   id: string;
@@ -26,6 +27,10 @@ const CreateTransactionForm = ({ userID }) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [newCategory, setNewCategory] = useState<string>('');
   const [isNewCategoryOutflow, setIsNewCategoryOutflow] = useState<boolean>(true);
+  const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [newCategoryName, setNewCategoryName] = useState<string>('');
+  
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -100,6 +105,19 @@ const CreateTransactionForm = ({ userID }) => {
       <Text style={styles.categoryText}>{item.name}</Text>
     </TouchableOpacity>
   );
+
+  const renderEditCategory = ({ item }: { item: Category }) => (
+    <TouchableOpacity
+      style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
+      onPress={() => { 
+        setEditingCategory(item);
+        setSelectedCategory(item.name)
+      }}
+    >
+      <Text style={styles.categoryText}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   const handleAddCategory = async () => {
     if (!newCategory.trim()) {
       Alert.alert('Please enter a category name');
@@ -121,6 +139,50 @@ const CreateTransactionForm = ({ userID }) => {
       console.error('Unexpected error adding category:', err);
     }
   };
+
+  const handleEditCategory = async (category: Category) => {
+    if (!newCategoryName.trim()) {
+        Alert.alert('Please enter a new category name');
+        return;
+    }
+    try {
+        const { error } = await supabase
+            .from('categories')
+            .update({ name: newCategoryName })
+            .eq('id', category.id);
+        if (error) {
+            console.error('Error updating category:', error);
+        } else {
+            setCategories(categories.map(cat => cat.id === category.id ? { ...cat, name: newCategoryName } : cat));
+            setEditingCategory(null);
+            setNewCategoryName('');
+            Alert.alert('Category updated successfully');
+        }
+    } catch (err) {
+        console.error('Unexpected error updating category:', err);
+    }
+};
+
+const handleDeleteCategory = async (category: Category) => {
+    try {
+        const { error } = await supabase
+            .from('categories')
+            .delete()
+            .eq('id', category.id);
+        if (error) {
+            console.error('Error deleting category:', error);
+        } else {
+            setCategories(categories.filter(cat => cat.id !== category.id));
+            setEditingCategory(null);
+            Alert.alert('Category deleted successfully');
+        }
+    } catch (err) {
+        console.error('Unexpected error deleting category:', err);
+    }
+};
+
+  
+  
 
   return (
     <View style={styles.loginContainer}>
@@ -159,6 +221,9 @@ const CreateTransactionForm = ({ userID }) => {
         value={description}
         onChangeText={setDescription}
       />
+      <TouchableOpacity style={styles.button} onPress={() => setEditModalVisible(true)}>
+        <Text style={styles.buttonText}>Edit Categories</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
         <Text style={styles.buttonText}>Backdate Transaction</Text>
       </TouchableOpacity>
@@ -208,12 +273,56 @@ const CreateTransactionForm = ({ userID }) => {
             <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
               <Text style={styles.buttonText}>Add Category</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(!modalVisible)}>
+            <TouchableOpacity style={styles.button} onPress={() => setEditModalVisible(!modalVisible)}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={editModalVisible}
+      onRequestClose={() => setEditModalVisible(!editModalVisible)}
+    >
+      <View style={styles.editContainer}>
+        <Text style={styles.welcomeText}>Edit Category</Text>
+        <View style={styles.categoryGridContainer}>
+            <FlatList
+                data={categories}
+                renderItem={({ item }) => renderEditCategory({ item })}
+                keyExtractor={(item) => item.id}
+                numColumns={3}
+                contentContainerStyle={styles.flatList}
+                showsVerticalScrollIndicator={false}
+            />
+        </View>
+        {editingCategory && (
+        <View>
+          <TextInput
+            style={styles.input}
+            placeholder="New Category Name"
+            placeholderTextColor="grey"
+            textAlign="center"
+            value={newCategoryName}
+            onChangeText={setNewCategoryName}
+          />
+          <TouchableOpacity style={styles.button} onPress={() => handleEditCategory(editingCategory)}>
+            <Text style={styles.buttonText}>Save Changes</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => handleDeleteCategory(editingCategory)}>
+            <Text style={styles.buttonText}>Delete Category</Text>
+          </TouchableOpacity>
+          
+        </View>
+      )}
+      <Pressable style={styles.transparentButton} onPress={() => setEditModalVisible(false)}>
+            <Text style={styles.transparentButtonText}>Close</Text>
+      </Pressable>
+    </View>
+    </Modal>
+
     </View>
   );
 };

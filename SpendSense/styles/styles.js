@@ -259,7 +259,15 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     flex: 1,
     backgroundColor: "white",
-  }
+  },
+  editContainer: {
+    paddingTop: 80,
+    paddingLeft: 16,
+    paddingRight: 16,
+    paddingBottom: 20,
+    flex: 1,
+    backgroundColor: "white",
+  },
 });
 
 export default styles;
