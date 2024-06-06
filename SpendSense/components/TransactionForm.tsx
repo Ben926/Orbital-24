@@ -123,6 +123,23 @@ const CreateTransactionForm = ({ userID }) => {
       Alert.alert('Please enter a category name');
       return;
     }
+    let { data: existingCategory, error: fetchError } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('user_id', userID)
+      .eq('name', newCategory)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') { // Ignore "No Rows Found" error
+      console.error('Error checking category:', fetchError);
+      Alert.alert('Error', 'Error checking category');
+      return;
+    }
+
+    if (existingCategory) {
+      Alert.alert('Error', 'Category already exists');
+      return;
+    }
     try {
       const { data, error } = await supabase
         .from('categories')
