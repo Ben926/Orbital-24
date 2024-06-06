@@ -130,7 +130,7 @@ const CreateTransactionForm = ({ userID }) => {
       .eq('name', newCategory)
       .single();
 
-    if (fetchError && fetchError.code !== 'PGRST116') { // Ignore "No Rows Found" error
+    if (fetchError && fetchError.code !== 'PGRST116') { 
       console.error('Error checking category:', fetchError);
       Alert.alert('Error', 'Error checking category');
       return;
@@ -290,7 +290,7 @@ const handleDeleteCategory = async (category: Category) => {
             <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
               <Text style={styles.buttonText}>Add Category</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => setEditModalVisible(!modalVisible)}>
+            <TouchableOpacity style={styles.button} onPress={() => setModalVisible(!modalVisible)}>
               <Text style={styles.buttonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
