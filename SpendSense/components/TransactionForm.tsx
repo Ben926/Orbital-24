@@ -137,9 +137,14 @@ const CreateTransactionForm = ({ userID }) => {
     }
 
     if (existingCategory) {
+      if (existingCategory.name === 'KSI') {
+        Alert.alert('Error', 'There can never be 2 KSIs.');
+      } else {
       Alert.alert('Error', 'Category already exists');
+      }
       return;
     }
+
     try {
       const { data, error } = await supabase
         .from('categories')
