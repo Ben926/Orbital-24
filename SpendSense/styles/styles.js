@@ -75,6 +75,11 @@ const styles = StyleSheet.create({
     right: 10,
     top: 8,
   },
+  buttonGroup: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
   button: {
     backgroundColor: '#49D469',
     paddingVertical: 12,
