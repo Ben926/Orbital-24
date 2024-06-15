@@ -6,21 +6,33 @@ import TransactionForm from "@/components/TransactionForm";
 import { useLocalSearchParams, router } from "expo-router";
 import BottomTabs from "@/components/BottomTabs";
 import ShowTransactions from "@/components/ShowTransactions";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const Home = () => {
   const { userID } = useLocalSearchParams();
   const handleViewAll = () => { router.replace(`ViewAll/${userID}`) }
   const [modalVisible, setModalVisible] = useState(false);
-  const [timePeriod, setTimePeriod] = useState('daily'); // default to daily
+  const [timePeriod, setTimePeriod] = useState('');
+  const getSingaporeDate = (date = new Date()) => {
+    const offsetDate = new Date(date);
+    offsetDate.setHours(offsetDate.getHours() + 8);
+    return offsetDate;
+  };
+  const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
+  const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
 
   const handleTimePeriodChange = (period) => {
     setTimePeriod(period);
   };
 
-  const getSingaporeDate = (date = new Date()) => {
-    const offsetDate = new Date(date);
-    offsetDate.setHours(offsetDate.getHours() + 8);
-    return offsetDate;
+  const onManualStartDateChange = (event: any, selectedDate?: Date) => {
+    const currentStartDate = selectedDate || manualStartDate;
+    setManualStartDate(currentStartDate);
+  };
+
+  const onManualEndDateChange = (event: any, selectedDate?: Date) => {
+    const currentEndDate = selectedDate || manualEndDate;
+    setManualEndDate(currentEndDate);
   };
 
   const getStartDate = () => {
@@ -42,6 +54,11 @@ const Home = () => {
         startDate.setHours(0, 0, 0, 0);
         startDate = getSingaporeDate(startDate);
         break;
+      case 'manual':
+        startDate = manualStartDate;
+        startDate.setHours(0, 0, 0, 0);
+        startDate = getSingaporeDate(startDate);
+        break;
       default:
         startDate = new Date(today.setHours(0, 0, 0, 0));
         startDate = getSingaporeDate(startDate);
@@ -50,10 +67,16 @@ const Home = () => {
   };
 
   const getEndDate = () => {
-    let today = new Date();
-    today.setHours(23, 59, 59, 999);
-    today = getSingaporeDate(today);
-    return today.toISOString();
+    if (timePeriod == "manusal") {
+      let endDate = manualEndDate;
+      endDate.setHours(23, 59, 59, 999);
+      return endDate.toISOString();
+    } else {
+      let today = new Date();
+      today.setHours(23, 59, 59, 999);
+      today = getSingaporeDate(today);
+      return today.toISOString();
+    }
   };
 
   return (
@@ -68,10 +91,23 @@ const Home = () => {
         <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('monthly')}>
           <Text style={styles.transparentButtonText}>Monthly</Text>
         </Pressable>
+        <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('manual')}>
+          <Text style={styles.transparentButtonText}>Manual</Text>
+        </Pressable>
       </View>
-
+      <View style={styles.datetimepicker}>
+        {timePeriod == "manual" && <DateTimePicker
+          value={manualStartDate}
+          mode="date"
+          display="default"
+          onChange={onManualStartDateChange} />}
+        {timePeriod == "manual" && <DateTimePicker
+          value={manualEndDate}
+          mode="date"
+          display="default"
+          onChange={onManualEndDateChange} />}
+      </View>
       <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
-
       <Pressable style={styles.transparentButton} onPress={handleViewAll}>
         <Text style={styles.transparentButtonText}>View All Records</Text>
       </Pressable>

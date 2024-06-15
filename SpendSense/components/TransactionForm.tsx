@@ -87,13 +87,11 @@ const CreateTransactionForm = ({ userID }) => {
 
   const onDateChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || date;
-    setShowDateTimePicker(Platform.OS === 'ios');
     setDate(currentDate);
   };
 
   const onTimeChange = (event: any, selectedTime?: Date) => {
     const currentTime = selectedTime || date;
-    setShowDateTimePicker(Platform.OS === 'ios');
     setDate(currentTime);
   };
 
