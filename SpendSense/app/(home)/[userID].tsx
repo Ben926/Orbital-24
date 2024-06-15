@@ -17,31 +17,42 @@ const Home = () => {
     setTimePeriod(period);
   };
 
+  const getSingaporeDate = (date = new Date()) => {
+    const offsetDate = new Date(date);
+    offsetDate.setHours(offsetDate.getHours() + 8);
+    return offsetDate;
+  };
+
   const getStartDate = () => {
     const today = new Date();
     let startDate;
     switch (timePeriod) {
       case 'daily':
         startDate = new Date(today.setHours(0, 0, 0, 0));
+        startDate = getSingaporeDate(startDate);
         break;
       case 'weekly':
         const firstDayOfWeek = today.getDate() - today.getDay();
         startDate = new Date(today.setDate(firstDayOfWeek));
         startDate.setHours(0, 0, 0, 0);
+        startDate = getSingaporeDate(startDate);
         break;
       case 'monthly':
         startDate = new Date(today.getFullYear(), today.getMonth(), 1);
         startDate.setHours(0, 0, 0, 0);
+        startDate = getSingaporeDate(startDate);
         break;
       default:
         startDate = new Date(today.setHours(0, 0, 0, 0));
+        startDate = getSingaporeDate(startDate);
     }
     return startDate.toISOString();
   };
 
   const getEndDate = () => {
-    const today = new Date();
+    let today = new Date();
     today.setHours(23, 59, 59, 999);
+    today = getSingaporeDate(today);
     return today.toISOString();
   };
 
