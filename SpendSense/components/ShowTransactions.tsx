@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 import supabase from "../supabase/supabase";
 import styles from '@/styles/styles';
+import PieChartComponent from '@/components/PieChart';
 
 type Transaction = {
   id: string;
@@ -18,9 +19,18 @@ interface ShowTransactionsProps {
   endDate: string;
 }
 
+type PieChartData = {
+  name: string;
+  amount: number;
+  color: string;
+  legendFontColor: string;
+  legendFontSize: number;
+};
+
 const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pieChartData, setPieChartData] = useState<PieChartData[]>([]);
 
   useEffect(() => {
     fetchTransactions();
@@ -40,6 +50,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         console.error('Error fetching transaction history', error);
       } else {
         setTransactions(data || []);
+        formatPieChartData(data || []);
       }
     } finally {
       setLoading(false);
@@ -56,6 +67,33 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       minute: '2-digit',
     };
     return date.toLocaleDateString('en-US', options);
+  };
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
+
+  const formatPieChartData = (data: Transaction[]) => {
+    const formattedData = data.reduce((acc: PieChartData[], curr) => {
+      const categoryIndex = acc.findIndex(item => item.name === curr.category);
+      if (categoryIndex >= 0) {
+        acc[categoryIndex].amount += curr.amount;
+      } else {
+        acc.push({
+          name: curr.category,
+          amount: curr.amount,
+          color: getRandomColor(), 
+          legendFontColor: "#7F7F7F",
+          legendFontSize: 15
+        });
+      }
+      return acc;
+    }, []);
+    setPieChartData(formattedData);
   };
 
   const deleteTransaction = async (transactionID: string) => {
@@ -98,11 +136,14 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       {loading ? (
         <Text>Loading...</Text>
       ) : (
-        <FlatList
-          data={transactions}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={renderItem}
-        />
+        <>
+          <PieChartComponent data={pieChartData} />
+          <FlatList
+            data={transactions}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderItem}
+          />
+        </>
       )}
     </View>
   );

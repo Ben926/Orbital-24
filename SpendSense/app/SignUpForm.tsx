@@ -25,13 +25,13 @@ const SignUpForm = () => {
     } else {
       const userId = data.user.id;
       const defaultCategories = [
-        'Food',
-        'Transport',
-        'Shopping',
-        'Entertainment',
-        'Medical',
-        'Housing',
-        'Income'
+        { name: 'Food', color: '#FF6347' },         
+        { name: 'Transport', color: '#FFD700' },    
+        { name: 'Shopping', color: '#1E90FF' },     
+        { name: 'Entertainment', color: '#32CD32' },
+        { name: 'Medical', color: '#FF69B4' },      
+        { name: 'Housing', color: '#8A2BE2' },      
+        { name: 'Income', color: '#00FF7F' }   
       ];
 
       const { error: tableError } = await supabase
@@ -41,8 +41,9 @@ const SignUpForm = () => {
         .from('categories')
         .insert(defaultCategories.map(category => ({
           user_id: userId,
-          name: category,
-          outflow: category == "Income" ? false : true 
+          name: category.name,
+          color: category.color,
+          outflow: category.name == "Income" ? false : true 
         })));
 
       if (tableError) {

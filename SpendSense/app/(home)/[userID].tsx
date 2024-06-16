@@ -8,6 +8,7 @@ import BottomTabs from "@/components/BottomTabs";
 import ShowTransactions from "@/components/ShowTransactions";
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+
 const Home = () => {
   const { userID } = useLocalSearchParams();
   const handleViewAll = () => { router.replace(`ViewAll/${userID}`) }
@@ -20,6 +21,7 @@ const Home = () => {
   };
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
+
 
   const handleTimePeriodChange = (period) => {
     setTimePeriod(period);
