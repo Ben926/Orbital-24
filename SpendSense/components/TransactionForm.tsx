@@ -30,6 +30,14 @@ const CreateTransactionForm = ({ userID }) => {
   const [editModalVisible, setEditModalVisible] = useState<boolean>(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [newCategoryName, setNewCategoryName] = useState<string>('');
+  const getRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  };
   
 
   useEffect(() => {
@@ -146,7 +154,7 @@ const CreateTransactionForm = ({ userID }) => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .insert([{ user_id: userID, name: newCategory, outflow: isNewCategoryOutflow }])
+        .insert([{ user_id: userID, name: newCategory, outflow: isNewCategoryOutflow, color: getRandomColor() }])
         .select();
       if (error) {
         console.error('Error adding category:', error);
@@ -284,12 +292,9 @@ const handleDeleteCategory = async (category: Category) => {
               value={newCategory}
               onChangeText={setNewCategory}
             />
-            {isNewCategoryOutflow && <TouchableOpacity style={styles.button} onPress={() => setIsNewCategoryOutflow(false)}>
-              <Text style={styles.buttonText}>Outflow</Text>
-            </TouchableOpacity>}
-            {!isNewCategoryOutflow && <TouchableOpacity style={styles.button} onPress={() => setIsNewCategoryOutflow(true)}>
-              <Text style={styles.buttonText}>Inflow</Text>
-            </TouchableOpacity>}
+            <TouchableOpacity style={styles.button} onPress={() => setIsNewCategoryOutflow(!isNewCategoryOutflow)}>
+              <Text style={styles.buttonText}>{isNewCategoryOutflow ? "Outflow" : "Inflow"}</Text>
+            </TouchableOpacity>
             <TouchableOpacity style={styles.button} onPress={handleAddCategory}>
               <Text style={styles.buttonText}>Add Category</Text>
             </TouchableOpacity>

@@ -29,8 +29,10 @@ type PieChartData = {
 
 const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [pieChartData, setPieChartData] = useState<PieChartData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
+  const [inflowPieChartData, setInflowPieChartData] = useState<PieChartData[]>([]);
+  const [showInflowPieChart, setShowInflowPieChart] = useState<Boolean>(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -50,7 +52,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         console.error('Error fetching transaction history', error);
       } else {
         setTransactions(data || []);
-        formatPieChartData(data || []);
+        const inflowTransactions = data.filter((transaction) => transaction.amount >= 0)
+        const outflowTransactions = data.filter((transaction) => transaction.amount < 0)
+        setInflowPieChartData(formatPieChartData(inflowTransactions || []));
+        setOutflowPieChartData(formatPieChartData(outflowTransactions || []));
       }
     } finally {
       setLoading(false);
@@ -86,14 +91,14 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         acc.push({
           name: curr.category,
           amount: curr.amount,
-          color: getRandomColor(), 
+          color: getRandomColor(),
           legendFontColor: "#7F7F7F",
           legendFontSize: 15
         });
       }
       return acc;
     }, []);
-    setPieChartData(formattedData);
+    return formattedData;
   };
 
   const deleteTransaction = async (transactionID: string) => {
@@ -137,7 +142,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         <Text>Loading...</Text>
       ) : (
         <>
-          <PieChartComponent data={pieChartData} />
+          <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
+            <Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>
+          </TouchableOpacity>
+          <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />
           <FlatList
             data={transactions}
             keyExtractor={(item) => item.id.toString()}
