@@ -38,7 +38,7 @@ const CreateTransactionForm = ({ userID }) => {
     }
     return color;
   };
-  
+
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -115,7 +115,7 @@ const CreateTransactionForm = ({ userID }) => {
   const renderEditCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
       style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
-      onPress={() => { 
+      onPress={() => {
         setEditingCategory(item);
         setSelectedCategory(item.name)
       }}
@@ -136,7 +136,7 @@ const CreateTransactionForm = ({ userID }) => {
       .eq('name', newCategory)
       .single();
 
-    if (fetchError && fetchError.code !== 'PGRST116') { 
+    if (fetchError && fetchError.code !== 'PGRST116') {
       console.error('Error checking category:', fetchError);
       Alert.alert('Error', 'Error checking category');
       return;
@@ -146,7 +146,7 @@ const CreateTransactionForm = ({ userID }) => {
       if (existingCategory.name === 'KSI') {
         Alert.alert('Error', 'There can never be 2 KSIs.');
       } else {
-      Alert.alert('Error', 'Category already exists');
+        Alert.alert('Error', 'Category already exists');
       }
       return;
     }
@@ -170,47 +170,50 @@ const CreateTransactionForm = ({ userID }) => {
 
   const handleEditCategory = async (category: Category) => {
     if (!newCategoryName.trim()) {
-        Alert.alert('Please enter a new category name');
-        return;
+      Alert.alert('Please enter a new category name');
+      return;
     }
     try {
-        const { error } = await supabase
-            .from('categories')
-            .update({ name: newCategoryName })
-            .eq('id', category.id);
-        if (error) {
-            console.error('Error updating category:', error);
-        } else {
-            setCategories(categories.map(cat => cat.id === category.id ? { ...cat, name: newCategoryName } : cat));
-            setEditingCategory(null);
-            setNewCategoryName('');
-            Alert.alert('Category updated successfully');
-        }
-    } catch (err) {
-        console.error('Unexpected error updating category:', err);
-    }
-};
+      const { error: error_raw_records_table } = await supabase
+        .from(`raw_records_${userID.replace(/-/g, '')}`)
+        .update({ category: newCategoryName })
+        .eq('category', category.name)
 
-const handleDeleteCategory = async (category: Category) => {
+      const { error: error_categories_table } = await supabase
+        .from('categories')
+        .update({ name: newCategoryName })
+        .eq('id', category.id);
+
+      if (error_raw_records_table || error_categories_table) {
+        console.error('Error updating category');
+      } else {
+        setCategories(categories.map(cat => cat.id === category.id ? { ...cat, name: newCategoryName } : cat));
+        setEditingCategory(null);
+        setNewCategoryName('');
+        Alert.alert('Category updated successfully');
+      }
+    } catch (err) {
+      console.error('Unexpected error updating category:', err);
+    }
+  };
+
+  const handleDeleteCategory = async (category: Category) => {
     try {
-        const { error } = await supabase
-            .from('categories')
-            .delete()
-            .eq('id', category.id);
-        if (error) {
-            console.error('Error deleting category:', error);
-        } else {
-            setCategories(categories.filter(cat => cat.id !== category.id));
-            setEditingCategory(null);
-            Alert.alert('Category deleted successfully');
-        }
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', category.id);
+      if (error) {
+        console.error('Error deleting category:', error);
+      } else {
+        setCategories(categories.filter(cat => cat.id !== category.id));
+        setEditingCategory(null);
+        Alert.alert('Category deleted successfully');
+      }
     } catch (err) {
-        console.error('Unexpected error deleting category:', err);
+      console.error('Unexpected error deleting category:', err);
     }
-};
-
-  
-  
+  };
 
   return (
     <View style={styles.loginContainer}>
@@ -305,48 +308,48 @@ const handleDeleteCategory = async (category: Category) => {
         </View>
       </Modal>
 
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={editModalVisible}
-      onRequestClose={() => setEditModalVisible(!editModalVisible)}
-    >
-      <View style={styles.editContainer}>
-        <Text style={styles.welcomeText}>Edit Category</Text>
-        <View style={styles.categoryGridContainer}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={editModalVisible}
+        onRequestClose={() => setEditModalVisible(!editModalVisible)}
+      >
+        <View style={styles.editContainer}>
+          <Text style={styles.welcomeText}>Edit Category</Text>
+          <View style={styles.categoryGridContainer}>
             <FlatList
-                data={categories}
-                renderItem={({ item }) => renderEditCategory({ item })}
-                keyExtractor={(item) => item.id}
-                numColumns={3}
-                contentContainerStyle={styles.flatList}
-                showsVerticalScrollIndicator={false}
+              data={categories}
+              renderItem={({ item }) => renderEditCategory({ item })}
+              keyExtractor={(item) => item.id}
+              numColumns={3}
+              contentContainerStyle={styles.flatList}
+              showsVerticalScrollIndicator={false}
             />
-        </View>
-        {editingCategory && (
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="New Category Name"
-            placeholderTextColor="grey"
-            textAlign="center"
-            value={newCategoryName}
-            onChangeText={setNewCategoryName}
-          />
-          <TouchableOpacity style={styles.button} onPress={() => handleEditCategory(editingCategory)}>
-            <Text style={styles.buttonText}>Save Changes</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => handleDeleteCategory(editingCategory)}>
-            <Text style={styles.buttonText}>Delete Category</Text>
-          </TouchableOpacity>
-          
-        </View>
-      )}
-      <Pressable style={styles.transparentButton} onPress={() => setEditModalVisible(false)}>
+          </View>
+          {editingCategory && (
+            <View>
+              <TextInput
+                style={styles.input}
+                placeholder="New Category Name"
+                placeholderTextColor="grey"
+                textAlign="center"
+                value={newCategoryName}
+                onChangeText={setNewCategoryName}
+              />
+              <TouchableOpacity style={styles.button} onPress={() => handleEditCategory(editingCategory)}>
+                <Text style={styles.buttonText}>Save Changes</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={() => handleDeleteCategory(editingCategory)}>
+                <Text style={styles.buttonText}>Delete Category</Text>
+              </TouchableOpacity>
+
+            </View>
+          )}
+          <Pressable style={styles.transparentButton} onPress={() => setEditModalVisible(false)}>
             <Text style={styles.transparentButtonText}>Close</Text>
-      </Pressable>
-    </View>
-    </Modal>
+          </Pressable>
+        </View>
+      </Modal>
 
     </View>
   );
