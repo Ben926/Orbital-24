@@ -70,7 +70,8 @@ const CreateTransactionForm = ({ userID }) => {
         amount: category_record.outflow ? -parseFloat(amount) : parseFloat(amount),
         category: selectedCategory,
         description,
-        timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate()
+        timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate(),
+        color: category_record.color
       };
       try {
         const { error } = await supabase

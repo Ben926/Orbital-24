@@ -11,6 +11,7 @@ type Transaction = {
   amount: number;
   timestamp: string;
   description: string;
+  color: string
 };
 
 interface ShowTransactionsProps {
@@ -38,123 +39,120 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
     fetchTransactions();
   }, [startDate, endDate]);
 
-  const fetchTransactions = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(`raw_records_${userID.replace(/-/g, '')}`)
-        .select('*')
-        .gte('timestamp', startDate)
-        .lte('timestamp', endDate)
-        .order('timestamp', { ascending: false });
+  useEffect(() => {fetchPieChartData()}, [transactions]);
 
-      if (error) {
-        console.error('Error fetching transaction history', error);
-      } else {
-        setTransactions(data || []);
-        const inflowTransactions = data.filter((transaction) => transaction.amount >= 0)
-        const outflowTransactions = data.filter((transaction) => transaction.amount < 0)
-        setInflowPieChartData(formatPieChartData(inflowTransactions || []));
-        setOutflowPieChartData(formatPieChartData(outflowTransactions || []));
-      }
-    } finally {
-      setLoading(false);
+const fetchTransactions = async () => {
+  setLoading(true);
+  try {
+    const { data, error } = await supabase
+      .from(`raw_records_${userID.replace(/-/g, '')}`)
+      .select('*')
+      .gte('timestamp', startDate)
+      .lte('timestamp', endDate)
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching transaction history', error);
+    } else {
+      setTransactions(data || []);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    };
-    return date.toLocaleDateString('en-US', options);
+const fetchPieChartData = async () => {
+      const inflowTransactions = transactions.filter((transaction) => transaction.amount >= 0)
+      const outflowTransactions = transactions.filter((transaction) => transaction.amount < 0)
+      setInflowPieChartData(formatPieChartData(inflowTransactions || []));
+      setOutflowPieChartData(formatPieChartData(outflowTransactions || []));
+}
+
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   };
-  const getRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
+  return date.toLocaleDateString('en-US', options);
+};
+
+const formatPieChartData = (data: Transaction[]) => {
+  const formattedData = data.reduce((acc: PieChartData[], curr) => {
+    const categoryIndex = acc.findIndex(item => item.name === curr.category);
+    if (categoryIndex >= 0) {
+      acc[categoryIndex].amount += curr.amount;
+    } else {
+      acc.push({
+        name: curr.category,
+        amount: curr.amount,
+        color: curr.color,
+        legendFontColor: "#7F7F7F",
+        legendFontSize: 15
+      });
     }
-    return color;
-  };
+    return acc;
+  }, []);
+  return formattedData;
+};
 
-  const formatPieChartData = (data: Transaction[]) => {
-    const formattedData = data.reduce((acc: PieChartData[], curr) => {
-      const categoryIndex = acc.findIndex(item => item.name === curr.category);
-      if (categoryIndex >= 0) {
-        acc[categoryIndex].amount += curr.amount;
-      } else {
-        acc.push({
-          name: curr.category,
-          amount: curr.amount,
-          color: getRandomColor(),
-          legendFontColor: "#7F7F7F",
-          legendFontSize: 15
-        });
-      }
-      return acc;
-    }, []);
-    return formattedData;
-  };
+const deleteTransaction = async (transactionID: string) => {
+  try {
+    const { error } = await supabase
+      .from(`raw_records_${userID.replace(/-/g, '')}`)
+      .delete()
+      .eq('id', transactionID);
 
-  const deleteTransaction = async (transactionID: string) => {
-    try {
-      const { error } = await supabase
-        .from(`raw_records_${userID.replace(/-/g, '')}`)
-        .delete()
-        .eq('id', transactionID);
-
-      if (error) {
-        console.error('Error deleting transaction', error);
-      } else {
-        setTransactions((prevTransactions) =>
-          prevTransactions.filter((transaction) => transaction.id !== transactionID)
-        );
-      }
-    } catch (error) {
+    if (error) {
       console.error('Error deleting transaction', error);
+    } else {
+      setTransactions((prevTransactions) =>
+        prevTransactions.filter((transaction) => transaction.id !== transactionID)
+      );
     }
-  };
+  } catch (error) {
+    console.error('Error deleting transaction', error);
+  }
+};
 
-  const renderItem = ({ item }: { item: Transaction }) => (
-    <View style={styles.transactionItem}>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => deleteTransaction(item.id)}
-      >
-        <Text style={styles.deleteButtonText}>x</Text>
-      </TouchableOpacity>
-      <Text style={styles.transactionDate}>{item.date}</Text>
-      <Text style={styles.transactionCategory}>{item.category}</Text>
-      <Text style={styles.transactionAmount}>${item.amount}</Text>
-      <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
-      <Text style={styles.transactionDescription}>{item.description}</Text>
-    </View>
-  );
+const renderItem = ({ item }: { item: Transaction }) => (
+  <View style={styles.transactionItem}>
+    <TouchableOpacity
+      style={styles.deleteButton}
+      onPress={() => deleteTransaction(item.id)}
+    >
+      <Text style={styles.deleteButtonText}>x</Text>
+    </TouchableOpacity>
+    <Text style={styles.transactionDate}>{item.date}</Text>
+    <Text style={styles.transactionCategory}>{item.category}</Text>
+    <Text style={styles.transactionAmount}>${item.amount}</Text>
+    <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
+    <Text style={styles.transactionDescription}>{item.description}</Text>
+  </View>
+);
 
-  return (
-    <View style={styles.transactionContainer}>
-      {loading ? (
-        <Text>Loading...</Text>
-      ) : (
-        <>
-          <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
-            <Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>
-          </TouchableOpacity>
-          <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />
-          <FlatList
-            data={transactions}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={renderItem}
-          />
-        </>
-      )}
-    </View>
-  );
+return (
+  <View style={styles.transactionContainer}>
+    {loading ? (
+      <Text>Loading...</Text>
+    ) : (
+      <>
+        {transactions.length != 0 && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
+          <Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>
+        </TouchableOpacity>}
+        <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />
+        <FlatList
+          data={transactions}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+        />
+      </>
+    )}
+  </View>
+);
 };
 
 export default ShowTransactions;
