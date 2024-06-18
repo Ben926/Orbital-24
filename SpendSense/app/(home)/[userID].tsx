@@ -11,22 +11,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const Home = () => {
   const { userID } = useLocalSearchParams();
-  const handleViewAll = () => { router.replace(`ViewAll/${userID}`) }
   const [modalVisible, setModalVisible] = useState(false);
-  const [timePeriod, setTimePeriod] = useState('');
+  const [timePeriod, setTimePeriod] = useState('daily');
+  const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
+  const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
+
   const getSingaporeDate = (date = new Date()) => {
     const offsetDate = new Date(date);
     offsetDate.setHours(offsetDate.getHours() + 8);
     return offsetDate;
   };
-  const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
-  const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
-  const [daily, setDaily] = useState(true);
-  const [weekly, setWeekly] = useState(false);
-  const [monthly, setMonthly] = useState(false);
-  const [manual, setManual] = useState(false);
-
-
 
   const handleTimePeriodChange = (period) => {
     setTimePeriod(period);
@@ -77,6 +71,7 @@ const Home = () => {
     if (timePeriod == "manual") {
       let endDate = manualEndDate;
       endDate.setHours(23, 59, 59, 999);
+      endDate = getSingaporeDate(endDate);
       return endDate.toISOString();
     } else {
       let today = new Date();
@@ -115,7 +110,7 @@ const Home = () => {
           onChange={onManualEndDateChange} />}
       </View>
       <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
-      <Pressable style={styles.transparentButton} onPress={handleViewAll}>
+      <Pressable style={styles.transparentButton} onPress={() => router.push(`ViewAll/${userID}`)}>
         <Text style={styles.transparentButtonText}>View All Records</Text>
       </Pressable>
 

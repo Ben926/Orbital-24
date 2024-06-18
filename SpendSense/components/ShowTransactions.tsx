@@ -19,6 +19,7 @@ interface ShowTransactionsProps {
   userID: string;
   startDate: string;
   endDate: string;
+  showChart: boolean;
 }
 
 type PieChartData = {
@@ -29,7 +30,7 @@ type PieChartData = {
   legendFontSize: number;
 };
 
-const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate }) => {
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate, showChart = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
@@ -151,15 +152,15 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         <>
           {transactions.length !== 0 && (
             <>
-              <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
-                <Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>
-              </TouchableOpacity>
+              {showChart && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
+                {<Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>}
+              </TouchableOpacity>}
+              {showChart && <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />}
               <TouchableOpacity style={styles.button} onPress={() => setIsFilterModalVisible(true)}>
                 <Text style={styles.buttonText}>Filter</Text>
               </TouchableOpacity>
             </>
           )}
-          <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />
           <FlatList
             data={filteredTransactions}
             keyExtractor={(item) => item.id.toString()}

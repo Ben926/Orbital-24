@@ -57,8 +57,12 @@ const CreateTransactionForm = ({ userID }) => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!amount || !selectedCategory || !description) {
-      Alert.alert("Please fill up all fields!");
+    if (!amount || !selectedCategory) {
+      Alert.alert("Please select category and input a non-zero amount!");
+    } else if (isNaN(parseFloat(amount))) {
+      Alert.alert('Key in a valid amount')
+    } else if (parseFloat(amount) == 0) {
+      Alert.alert('Amount cannot be zero!')
     } else {
       let { data: category_record, error } = await supabase
         .from('categories')
