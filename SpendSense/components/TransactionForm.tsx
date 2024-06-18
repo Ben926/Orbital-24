@@ -113,6 +113,8 @@ const CreateTransactionForm = ({ userID }) => {
     </TouchableOpacity>
   );
 
+
+
   const renderEditCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
       style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
@@ -174,6 +176,27 @@ const CreateTransactionForm = ({ userID }) => {
       Alert.alert('Please enter a new category name');
       return;
     }
+    let { data: existingCategory, error: fetchError } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('user_id', userID)
+      .eq('name', newCategoryName)
+      .single();
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('Error checking category:', fetchError);
+      Alert.alert('Error', 'Error checking category');
+      return;
+    }
+
+    if (existingCategory) {
+      if (existingCategory.name === 'KSI') {
+        Alert.alert('Error', 'There can never be 2 KSIs.');
+      } else {
+        Alert.alert('Error', 'Category already exists');
+      }
+      return;
+    }
+
     try {
       const { error: error_raw_records_table } = await supabase
         .from(`raw_records_${userID.replace(/-/g, '')}`)
@@ -185,6 +208,7 @@ const CreateTransactionForm = ({ userID }) => {
         .update({ name: newCategoryName })
         .eq('id', category.id);
 
+      
       if (error_raw_records_table || error_categories_table) {
         console.error('Error updating category');
       } else {

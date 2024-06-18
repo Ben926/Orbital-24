@@ -93,6 +93,32 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 5,
   },
+  timeUnselectButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#49D469',
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+    elevation: 5,
+  },
+  timeButton: {
+    backgroundColor: '#49D469',
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 2,
+    elevation: 5,
+  },
   transparentButton: {
     backgroundColor: 'transparent',
     paddingVertical: 0,
@@ -273,6 +299,27 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "white",
   },
+  filterContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  filterContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center'
+  },
+  filterTitle: {
+    fontSize: 20,
+    marginBottom: 20
+  },
+  filterPicker: {
+    width: '100%',
+    height: 200
+  }
 });
 
 export default styles;

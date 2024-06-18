@@ -21,6 +21,11 @@ const Home = () => {
   };
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
+  const [daily, setDaily] = useState(true);
+  const [weekly, setWeekly] = useState(false);
+  const [monthly, setMonthly] = useState(false);
+  const [manual, setManual] = useState(false);
+
 
 
   const handleTimePeriodChange = (period) => {
@@ -69,7 +74,7 @@ const Home = () => {
   };
 
   const getEndDate = () => {
-    if (timePeriod == "manusal") {
+    if (timePeriod == "manual") {
       let endDate = manualEndDate;
       endDate.setHours(23, 59, 59, 999);
       return endDate.toISOString();
@@ -84,17 +89,17 @@ const Home = () => {
   return (
     <SafeAreaView style={styles.indexContainer}>
       <View style={styles.buttonGroup}>
-        <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('daily')}>
-          <Text style={styles.transparentButtonText}>Daily</Text>
+        <Pressable style={[styles.timeUnselectButton, timePeriod == 'daily' && styles.timeButton]} onPress={() => handleTimePeriodChange('daily')}>
+          <Text style={styles.buttonText}>Daily</Text>
         </Pressable>
-        <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('weekly')}>
-          <Text style={styles.transparentButtonText}>Weekly</Text>
+        <Pressable style={[styles.timeUnselectButton, timePeriod == 'weekly' && styles.timeButton]} onPress={() => handleTimePeriodChange('weekly')}>
+          <Text style={styles.buttonText}>Weekly</Text>
         </Pressable>
-        <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('monthly')}>
-          <Text style={styles.transparentButtonText}>Monthly</Text>
+        <Pressable style={[styles.timeUnselectButton, timePeriod == 'monthly' && styles.timeButton]} onPress={() => handleTimePeriodChange('monthly')}>
+          <Text style={styles.buttonText}>Monthly</Text>
         </Pressable>
-        <Pressable style={styles.transparentButton} onPress={() => handleTimePeriodChange('manual')}>
-          <Text style={styles.transparentButtonText}>Manual</Text>
+        <Pressable style={[styles.timeUnselectButton, timePeriod == 'manual' && styles.timeButton]} onPress={() => handleTimePeriodChange('manual')}>
+          <Text style={styles.buttonText}>Manual</Text>
         </Pressable>
       </View>
       <View style={styles.datetimepicker}>
