@@ -6,6 +6,15 @@ import { router } from "expo-router";
 import styles from '@/styles/styles';
 import PieChartComponent from '@/components/PieChart';
 
+type Goal = {
+  id: string;
+  goal_name: string;
+  target_amount: number;
+  current_amount: number;
+  start_date: string;
+  description: string;
+};
+
 type Transaction = {
   id: string;
   date: string;
@@ -34,11 +43,17 @@ type PieChartData = {
 const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate, showChart = true, showAll = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [deleting, setDeleting] = useState<boolean>(false);
   const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
   const [inflowPieChartData, setInflowPieChartData] = useState<PieChartData[]>([]);
   const [showInflowPieChart, setShowInflowPieChart] = useState<Boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
+  const getSingaporeDate = (date = new Date()) => {
+    const offsetDate = new Date(date);
+    offsetDate.setHours(offsetDate.getHours() + 8);
+    return offsetDate;
+  };
 
   useEffect(() => {
     fetchTransactions();
@@ -104,7 +119,38 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
     return formattedData;
   };
 
-  const deleteTransaction = async (transactionID: string) => {
+  const fetchGoals = async () => {
+    const { data, error } = await supabase
+      .from(`spending_goals_${userID.replace(/-/g, '')}`)
+      .select('*');
+    if (error) {
+      console.error('Error fetching goals:', error);
+      return [];
+    }
+    return data as Goal[];
+  };
+
+  const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
+    const goals = await fetchGoals();
+
+    for (const goal of goals) {
+      if (getSingaporeDate(new Date(goal.start_date)) <= transactionDate) {
+        goal.current_amount -= amount;
+
+        const { error } = await supabase
+          .from(`spending_goals_${userID.replace(/-/g, '')}`)
+          .update({ current_amount: goal.current_amount })
+          .eq('id', goal.id);
+
+        if (error) {
+          console.error('Error updating goal amount:', error);
+        }
+      }
+    }
+  };
+
+  const deleteTransaction = async (transactionID: string, transaction_amount: number, transaction_timestamp: string) => {
+    setDeleting(true);
     try {
       const { error } = await supabase
         .from(`raw_records_${userID.replace(/-/g, '')}`)
@@ -117,9 +163,12 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         setTransactions((prevTransactions) =>
           prevTransactions.filter((transaction) => transaction.id !== transactionID)
         );
+        await updateGoalAmounts(transaction_amount, getSingaporeDate(new Date(transaction_timestamp)));
       }
     } catch (error) {
       console.error('Error deleting transaction', error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -131,7 +180,8 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
                 <Text style={styles.transactionDescription}>{item.description}</Text>
                 <TouchableOpacity
                     style={styles.deleteButton}
-                    onPress={() => deleteTransaction(item.id)}
+                    onPress={() => deleteTransaction(item.id, item.amount, item.timestamp)}
+                    disabled={deleting}
                 >
                     <Text style={styles.deleteButtonText}>x</Text>
                 </TouchableOpacity>

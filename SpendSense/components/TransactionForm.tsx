@@ -78,7 +78,7 @@ const CreateTransactionForm = ({ userID }) => {
     const goals = await fetchGoals();
 
     for (const goal of goals) {
-      if (new Date(goal.start_date) <= transactionDate) {
+      if (getSingaporeDate(new Date(goal.start_date)) <= transactionDate) {
         goal.current_amount += amount;
 
         const { error } = await supabase
