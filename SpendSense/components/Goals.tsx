@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert } from 'react-native';
+import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert,  } from 'react-native';
+import * as Progress from 'react-native-progress';
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from '@/styles/styles';
@@ -9,8 +10,8 @@ import supabase from '@/supabase/supabase';
 type Goal = {
     id: string;
     goal_name: string;
-    target_amount: string;
-    current_amount: string;
+    target_amount: number;
+    current_amount: number;
     start_date: string;
     description: string;
 };
@@ -46,36 +47,37 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
             setGoals(data as Goal[]);
         }
     };
-    const calculateCurrentAmount = async (startDate: Date) => {
-        const { data: incomeData, error: incomeError } = await supabase
-            .from(`raw_records_${userID.replace(/-/g, '')}`)
-            .select('amount')
-            .gt('amount', '0')
-            .gte('timestamp', startDate);
+        /*const calculateCurrentAmount = async (startDate: Date) => {
+            const { data: incomeData, error: incomeError } = await supabase
+                .from(`raw_records_${userID.replace(/-/g, '')}`)
+                .select('amount')
+                .gt('amount', '0')
+                .gte('timestamp', startDate);
 
-        const { data: expenseData, error: expenseError } = await supabase
-            .from(`raw_records_${userID.replace(/-/g, '')}`)
-            .select('amount')
-            .lt('amount', '0')
-            .gte('timestamp', startDate);
+            const { data: expenseData, error: expenseError } = await supabase
+                .from(`raw_records_${userID.replace(/-/g, '')}`)
+                .select('amount')
+                .lt('amount', '0')
+                .gte('timestamp', startDate);
 
-        if (incomeError || expenseError) {
-            console.error(incomeError || expenseError);
-            return 0;
-        }
+            if (incomeError || expenseError) {
+                console.error(incomeError || expenseError);
+                return 0;
+            }
 
-        const totalIncome = incomeData.reduce((sum, transaction) => sum + transaction.amount, 0);
-        const totalExpenses = expenseData.reduce((sum, transaction) => sum + transaction.amount, 0);
+            const totalIncome = incomeData.reduce((sum, transaction) => sum + transaction.amount, 0);
+            const totalExpenses = expenseData.reduce((sum, transaction) => sum + transaction.amount, 0);
 
-        return totalIncome + totalExpenses;
-    };
+            return totalIncome + totalExpenses;
+        };*/
 
     const addGoal = async () => {
         
         
 
         if (newGoal.trim() && budgetAmount.trim() && description.trim()) {
-            const currentAmount = await calculateCurrentAmount(getSingaporeDate());
+            const currentAmount = 0;
+            
             const { data, error } = await supabase
                 .from(`spending_goals_${userID.replace(/-/g, '')}`)
                 .insert([
@@ -102,19 +104,66 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
             }
         }
     };
+    const deleteGoal = async (goalID: string) => {
+        try {
+          const { error } = await supabase
+            .from(`spending_goals_${userID.replace(/-/g, '')}`)
+            .delete()
+            .eq('id', goalID);
+    
+          if (error) {
+            console.error('Error deleting goal', error);
+          } else {
+              setGoals((prevGoals) =>
+              prevGoals.filter((goal) => goal.id !== goalID)
+            );
+          }
+        } catch (error) {
+          console.error('Error deleting transaction', error);
+        }
+      };
+      const formatTimestamp = (timestamp: string) => {
+        const date = new Date(timestamp);
+        const options: Intl.DateTimeFormatOptions = {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        };
+        return date.toLocaleDateString('en-US', options);
+      };
 
     return (
-        <SafeAreaView style={styles.indexContainer}>
+        <SafeAreaView style={styles.transactionContainer}>
             <FlatList
                 data={goals}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
+                    
                     <View style={styles.transactionItem}>
+                        <TouchableOpacity
+                            style={styles.deleteButton}
+                            onPress={() => deleteGoal(item.id)}
+                        >
+                            <Text style={styles.deleteButtonText}>x</Text>
+                        </TouchableOpacity>
                         <Text style={styles.transactionDescription}>{item.goal_name}</Text>
                         <Text style={styles.transactionAmount}>Target Amount: ${item.target_amount}</Text>
                         <Text style={styles.transactionAmount}>Current Amount: ${item.current_amount}</Text>
-                        <Text style={styles.transactionDate}>Start Date: {item.start_date}</Text>
+                        <Text style={styles.transactionDate}>Start Date: {formatTimestamp(item.start_date)}</Text>
                         <Text style={styles.transactionDescription}>Description: {item.description}</Text>
+                        <View style={styles.row}>
+                            <Progress.Bar
+                                progress={item.current_amount / item.target_amount}
+                                width={null}
+                                height={10}
+                                color="#49D469"
+                                borderRadius={5}
+                                style={{ flex: 1, marginRight: 10 }}
+                            />
+                            <Text>{Math.round((item.current_amount / item.target_amount) * 100)}%</Text>
+                        </View>
                     </View>
                 )}
             />

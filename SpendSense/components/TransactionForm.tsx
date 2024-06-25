@@ -4,6 +4,14 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
 
+type Goal = {
+  id: string;
+  goal_name: string;
+  target_amount: number;
+  current_amount: number;
+  start_date: string;
+  description: string;
+};
 
 type Category = {
   id: string;
@@ -56,6 +64,35 @@ const CreateTransactionForm = ({ userID }) => {
     fetchCategories();
   }, []);
 
+  const fetchGoals = async () => {
+    const { data, error } = await supabase
+      .from(`spending_goals_${userID.replace(/-/g, '')}`)
+      .select('*');
+    if (error) {
+      console.error('Error fetching goals:', error);
+      return [];
+    }
+    return data as Goal[];
+  };
+  const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
+    const goals = await fetchGoals();
+
+    for (const goal of goals) {
+      if (new Date(goal.start_date) <= transactionDate) {
+        goal.current_amount += amount;
+
+        const { error } = await supabase
+          .from(`spending_goals_${userID.replace(/-/g, '')}`)
+          .update({ current_amount: goal.current_amount })
+          .eq('id', goal.id);
+
+        if (error) {
+          console.error('Error updating goal amount:', error);
+        }
+      }
+    }
+  };
+
   const handleSubmit = async () => {
     if (!amount || !selectedCategory) {
       Alert.alert("Please select category and input a non-zero amount!");
@@ -70,8 +107,10 @@ const CreateTransactionForm = ({ userID }) => {
         .eq('user_id', userID)
         .eq('name', selectedCategory)
         .single()
+      const transactionAmount = category_record.outflow ? -parseFloat(amount) : parseFloat(amount);
+
       const transaction = {
-        amount: category_record.outflow ? -parseFloat(amount) : parseFloat(amount),
+        amount: transactionAmount,
         category: selectedCategory,
         description,
         timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate(),
@@ -86,6 +125,7 @@ const CreateTransactionForm = ({ userID }) => {
           console.error('Error creating transaction:', error);
         } else {
           Alert.alert('Success', 'Transaction created successfully!');
+          await updateGoalAmounts(transactionAmount, transaction.timestamp);
           setSelectedCategory('');
           setAmount('');
           setDescription('');
