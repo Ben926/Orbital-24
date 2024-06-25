@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import supabase from "../supabase/supabase";
+import { router } from "expo-router";
 import styles from '@/styles/styles';
 import PieChartComponent from '@/components/PieChart';
 
@@ -30,7 +31,7 @@ type PieChartData = {
   legendFontSize: number;
 };
 
-const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate, showChart = true }) => {
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate, showChart = true, showAll = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
@@ -124,19 +125,30 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
 
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.transactionItem}>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => deleteTransaction(item.id)}
-      >
-        <Text style={styles.deleteButtonText}>x</Text>
-      </TouchableOpacity>
-      <Text style={styles.transactionDate}>{item.date}</Text>
-      <Text style={styles.transactionCategory}>{item.category}</Text>
-      <Text style={styles.transactionAmount}>${item.amount}</Text>
-      <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
-      <Text style={styles.transactionDescription}>{item.description}</Text>
+        <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
+        <View style={styles.transactionContent}>
+            <View style={styles.transactionHeader}>
+                <Text style={styles.transactionDescription}>{item.description}</Text>
+                <TouchableOpacity
+                    style={styles.deleteButton}
+                    onPress={() => deleteTransaction(item.id)}
+                >
+                    <Text style={styles.deleteButtonText}>x</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.transactionDetails}>
+                <Text style={styles.transactionCategory}>{item.category}</Text>
+                <Text style={styles.transactionDate}>{item.date}</Text>
+            </View>
+            <View style={styles.transactionFooter}>
+                
+                <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
+                <Text style={styles.transactionAmount}>{item.amount < 0 ? `-$${Math.abs(item.amount)}` : `+$${item.amount}`}</Text>
+            </View>
+        </View>
     </View>
-  );
+);
+
 
   const filteredTransactions = selectedCategory
     ? transactions.filter(transaction => transaction.category === selectedCategory)
@@ -161,6 +173,11 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
               </TouchableOpacity>
             </>
           )}
+          <View style={styles.topRightButtonContainer}>
+         {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAll/${userID}`)}>
+            <Text style={styles.viewAllButtonText}>View All</Text>
+          </Pressable>}
+            </View>
           <FlatList
             data={filteredTransactions}
             keyExtractor={(item) => item.id.toString()}

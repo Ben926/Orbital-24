@@ -139,21 +139,25 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
             <FlatList
                 data={goals}
                 keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    
+                renderItem={({ item }) => (     
                     <View style={styles.transactionItem}>
-                        <TouchableOpacity
-                            style={styles.deleteButton}
-                            onPress={() => deleteGoal(item.id)}
-                        >
-                            <Text style={styles.deleteButtonText}>x</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.transactionDescription}>{item.goal_name}</Text>
-                        <Text style={styles.transactionAmount}>Target Amount: ${item.target_amount}</Text>
-                        <Text style={styles.transactionAmount}>Current Amount: ${item.current_amount}</Text>
-                        <Text style={styles.transactionDate}>Start Date: {formatTimestamp(item.start_date)}</Text>
-                        <Text style={styles.transactionDescription}>Description: {item.description}</Text>
-                        <View style={styles.row}>
+                        <View style={styles.transactionContent}>
+                            <View style={styles.transactionHeader}>
+                            <Text style={styles.transactionDescription}>{item.goal_name}</Text>
+                            <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={() => deleteGoal(item.id)}
+                            >
+                                <Text style={styles.deleteButtonText}>x</Text>
+                            </TouchableOpacity>
+                            </View>
+                            <Text style={styles.transactionAmount}>Target Amount: ${item.target_amount}</Text>
+                            <Text style={styles.transactionAmount}>Current Amount: ${item.current_amount}</Text>
+                            <View style={styles.transactionFooter}>
+                            <Text style={styles.transactionTimestamp}>Start Date: {formatTimestamp(item.start_date)}</Text>
+                            </View>
+                            <Text style={styles.transactionDescription}>Description: {item.description}</Text>
+                            <View style={styles.row}>
                             <Progress.Bar
                                 progress={item.current_amount / item.target_amount}
                                 width={null}
@@ -163,10 +167,11 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                                 style={{ flex: 1, marginRight: 10 }}
                             />
                             <Text>{Math.round((item.current_amount / item.target_amount) * 100)}%</Text>
+                            </View>
                         </View>
-                    </View>
-                )}
-            />
+                        </View>
+                                    )}
+                    />
             <TouchableOpacity
                 style={styles.transparentButton}
                 onPress={() => setModalVisible(true)}

@@ -4,6 +4,7 @@ import { PieChart } from 'react-native-chart-kit';
 import { View, Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
+console.log(screenWidth);
 
 const PieChartComponent = ({ data }) => {
   const chartConfig = {
@@ -16,8 +17,8 @@ const PieChartComponent = ({ data }) => {
     <View>
       <PieChart
         data={data}
-        width={screenWidth}
-        height={220}
+        width={screenWidth*(3/4)}
+        height={165}
         chartConfig={chartConfig}
         accessor={"amount"}
         backgroundColor={"white"}

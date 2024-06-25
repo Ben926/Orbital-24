@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginVertical: 10,
+    
   },
   button: {
     backgroundColor: '#49D469',
@@ -138,6 +138,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: "Figtree-Bold"
   },
+  colorIndicator: {
+    width: 15,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 10,
+  },
   transparentButtonText: {
     color: '#49D469',
     fontSize: 16,
@@ -163,7 +169,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 10,
   },
   datetimepicker: {
@@ -215,31 +220,97 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   transactionItem: {
-    padding: 20,
-    marginVertical: 8,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
+      flexDirection: 'row',
+      paddingLeft: 15,
+      paddingRight: 15,
+      paddingTop: 10,
+      paddingBottom: 10,
+      marginVertical: 8,
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 8,
+      backgroundColor: '#f9f9f9',
   },
-  transactionDate: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  colorIndicator: {
+      width: 15,
+      height: 50,
+      borderRadius: 5,
+      marginRight: 15,
+      marginBottom: 10,
+      marginTop: 10
   },
-  transactionCategory: {
-    fontSize: 14,
-    color: '#888',
+  transactionContent: {
+      flex: 1,
   },
-  transactionAmount: {
-    fontSize: 18,
-    color: '#000',
-  },
-  transactionTimestamp: {
-    flex: 1,
-    textAlign: 'right',
+  transactionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
   },
   transactionDescription: {
-    fontSize: 14,
-    marginTop: 8,
+      fontSize: 18,
+      fontWeight: 'bold',
+      flex: 1,
+      fontFamily: 'Figtree'
+  },
+  deleteButton: {
+      marginLeft: 10,
+      backgroundColor: 'rgba(255, 0, 0, 0.6)',
+      borderRadius: 5,
+      padding: 5,
+  },
+  deleteButtonText: {
+      color: 'white',
+      fontWeight: 'bold',
+  },
+  transactionDetails: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 8,
+      
+  },
+  transactionCategory: {
+      fontSize: 14,
+      color: '#555',
+      fontFamily: 'Figtree'
+  },
+  transactionDate: {
+      fontSize: 14,
+      color: '#555',
+  },
+  transactionFooter: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+  },
+  transactionAmount: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#000',
+      fontFamily: 'Figtree'
+  },
+  transactionTimestamp: {
+      fontSize: 12,
+      color: '#888',
+      fontFamily: 'Figtree'
+  },
+  topRightButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginRight: 10,
+    
+  },
+  viewAllButton: {
+    padding: 5,
+    backgroundColor: '#ccc',
+    borderRadius: 5,
+  },
+  viewAllButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontFamily: 'Figtree'
   },
   addCategorySquare: {
     justifyContent: 'center',
@@ -263,18 +334,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 2,
     elevation: 5,
-  },
-  deleteButton: {
-    position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: 'red',
-    borderRadius: 12,
-    padding: 3,
-  },
-  deleteButtonText: {
-    color: 'white',
-    fontWeight: 'bold',
   },
   tabsContainer: {
     flexDirection: 'row',

@@ -110,9 +110,6 @@ const Home = () => {
           onChange={onManualEndDateChange} />}
       </View>
       <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
-      <Pressable style={styles.transparentButton} onPress={() => router.push(`ViewAll/${userID}`)}>
-        <Text style={styles.transparentButtonText}>View All Records</Text>
-      </Pressable>
 
       <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.transparentButtonText}>Create New Transaction</Text>
