@@ -91,7 +91,7 @@ const CreateTransactionForm = ({ userID }) => {
     if (error) {
       console.error("Error fetching budgets:", error);
       return [];
-    } 
+    }
     return data as Budget[];
   };
 
@@ -115,14 +115,14 @@ const CreateTransactionForm = ({ userID }) => {
   };
 
   const updateBudgets = async (amount: number, transactionDate: Date) => {
-    if (amount>0) {
+    if (amount > 0) {
       return;
     }
     const budgets = await fetchBudgets();
 
     for (const budget of budgets) {
-      if (getSingaporeDate(new Date(budget.start_date)) <= transactionDate 
-      && getSingaporeDate(new Date(budget.end_date)) > transactionDate) {
+      if (getSingaporeDate(new Date(budget.start_date)) <= transactionDate
+        && getSingaporeDate(new Date(budget.end_date)) > transactionDate) {
         budget.amount_spent -= amount;
 
         const { error } = await supabase
@@ -313,6 +313,18 @@ const CreateTransactionForm = ({ userID }) => {
   };
 
   const handleDeleteCategory = async (category: Category) => {
+    let { data } = await supabase
+      .from(`raw_records_${userID.replace(/-/g, '')}`)
+      .select('*')
+      .eq('category', category.name)
+
+    const records_with_category = data || [];
+
+    if (records_with_category.length != 0) {
+      Alert.alert("Cannot delete category as there are exsiting records!")
+      return;
+    }
+    
     try {
       const { error } = await supabase
         .from('categories')
