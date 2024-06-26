@@ -30,9 +30,9 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
     const [date, setDate] = useState<Date>(new Date());
     const getSingaporeDate = (date = new Date()) => {
         const offsetDate = new Date(date);
-        offsetDate.setHours(offsetDate.getHours());
+        offsetDate.setHours(offsetDate.getHours() + 8);
         return offsetDate;
-    };
+      };
     const onDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -89,6 +89,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                 .insert([
                     {
                         goal_name: newGoal,
+                        log: getSingaporeDate(),
                         target_amount: parseFloat(budgetAmount),
                         current_amount: calculatedCurrentAmount,
                         start_date: getSingaporeDate(date),
@@ -107,6 +108,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                 setBudgetAmount('');
                 setDescription('');
                 setModalVisible(false);
+                setDate(new Date());
             }
         } else {
             Alert.alert('Please fill in the goal and amount!')

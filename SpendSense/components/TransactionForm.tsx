@@ -112,6 +112,7 @@ const CreateTransactionForm = ({ userID }) => {
       const transaction = {
         amount: transactionAmount,
         category: selectedCategory,
+        log: getSingaporeDate(),
         description,
         timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate(),
         color: category_record.color
@@ -201,7 +202,7 @@ const CreateTransactionForm = ({ userID }) => {
     try {
       const { data, error } = await supabase
         .from('categories')
-        .insert([{ user_id: userID, name: newCategory, outflow: isNewCategoryOutflow, color: getRandomColor() }])
+        .insert([{ user_id: userID, name: newCategory, log: getSingaporeDate(), outflow: isNewCategoryOutflow, color: getRandomColor() }])
         .select();
       if (error) {
         console.error('Error adding category:', error);

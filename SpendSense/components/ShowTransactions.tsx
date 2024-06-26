@@ -49,11 +49,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   const [showInflowPieChart, setShowInflowPieChart] = useState<Boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
-  const getSingaporeDate = (date = new Date()) => {
-    const offsetDate = new Date(date);
-    offsetDate.setHours(offsetDate.getHours() + 8);
-    return offsetDate;
-  };
 
   useEffect(() => {
     fetchTransactions();
@@ -134,7 +129,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
     const goals = await fetchGoals();
 
     for (const goal of goals) {
-      if (getSingaporeDate(new Date(goal.start_date)) <= transactionDate) {
+      if (new Date(goal.start_date) <= transactionDate) {
         goal.current_amount -= amount;
 
         const { error } = await supabase
@@ -163,7 +158,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         setTransactions((prevTransactions) =>
           prevTransactions.filter((transaction) => transaction.id !== transactionID)
         );
-        await updateGoalAmounts(transaction_amount, getSingaporeDate(new Date(transaction_timestamp)));
+        await updateGoalAmounts(transaction_amount, new Date(transaction_timestamp));
       }
     } catch (error) {
       console.error('Error deleting transaction', error);

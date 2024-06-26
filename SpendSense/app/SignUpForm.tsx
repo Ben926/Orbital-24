@@ -11,6 +11,11 @@ const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const getSingaporeDate = (date = new Date()) => {
+    const offsetDate = new Date(date);
+    offsetDate.setHours(offsetDate.getHours() + 8);
+    return offsetDate;
+  };
 
   const handleSignup = async () => {
     if (password !== confirmPassword) {
@@ -41,6 +46,7 @@ const SignUpForm = () => {
         .from('categories')
         .insert(defaultCategories.map(category => ({
           user_id: userId,
+          log: getSingaporeDate(),
           name: category.name,
           color: category.color,
           outflow: category.name == "Income" ? false : true 
