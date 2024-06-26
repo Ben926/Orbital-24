@@ -68,6 +68,43 @@ const Home = () => {
   };
 
   const getEndDate = () => {
+    let endDate;
+    switch (timePeriod) {
+      case 'manual' :
+        endDate = manualEndDate;
+        endDate.setHours(23, 59, 59, 999);
+        endDate = getSingaporeDate(endDate);
+        break;
+      case 'daily':
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999);
+        endDate = getSingaporeDate(endDate);
+        break;
+      case 'weekly':
+        endDate = new Date();
+        const day = endDate.getDay(); 
+        const diff = 7 - day; 
+        endDate.setDate(endDate.getDate() + diff); 
+        endDate.setHours(23, 59, 59, 999);
+        endDate = getSingaporeDate(endDate);
+        break;
+      case 'monthly':
+        endDate = new Date();
+        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0); // Last day of the current month
+        endDate.setHours(23, 59, 59, 999);
+        endDate = getSingaporeDate(endDate);
+        break;
+      default:
+        endDate = new Date();
+        endDate.setHours(23, 59, 59, 999);
+        endDate = getSingaporeDate(endDate);
+        break;
+      }
+      return endDate.toISOString();
+    }
+  
+
+  /*const getEndDate = () => {
     if (timePeriod == "manual") {
       let endDate = manualEndDate;
       endDate.setHours(23, 59, 59, 999);
@@ -79,7 +116,7 @@ const Home = () => {
       today = getSingaporeDate(today);
       return today.toISOString();
     }
-  };
+  };*/
 
   return (
     <SafeAreaView style={styles.indexContainer}>

@@ -30,6 +30,7 @@ interface ShowTransactionsProps {
   startDate: string;
   endDate: string;
   showChart: boolean;
+  showAll: boolean;
 }
 
 type PieChartData = {
