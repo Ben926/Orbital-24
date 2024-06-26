@@ -15,6 +15,15 @@ type Goal = {
   description: string;
 };
 
+type Budget = {
+  id: string;
+  budget_amount: number;
+  amount_spent: number;
+  start_date: string;
+  end_date: string;
+  description: string;
+};
+
 type Transaction = {
   id: string;
   date: string;
@@ -126,6 +135,17 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
     return data as Goal[];
   };
 
+  const fetchBudgets = async () => {
+    const { data, error } = await supabase
+      .from(`budget_plan_${userID.replace(/-/g, '')}`)
+      .select('*');
+    if (error) {
+      console.error("Error fetching budgets:", error);
+      return [];
+    } 
+    return data as Budget[];
+  };
+
   const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
     const goals = await fetchGoals();
 
@@ -140,6 +160,28 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
 
         if (error) {
           console.error('Error updating goal amount:', error);
+        }
+      }
+    }
+  };
+
+  const updateBudgets = async (amount: number, transactionDate: Date) => {
+    if (amount>0) {
+      return;
+    }
+    const budgets = await fetchBudgets();
+
+    for (const budget of budgets) {
+      if (new Date(budget.start_date) <= transactionDate && new Date(budget.end_date) > transactionDate) {
+        budget.amount_spent += amount;
+
+        const { error } = await supabase
+          .from(`budget_plan_${userID.replace(/-/g, '')}`)
+          .update({ amount_spent: budget.amount_spent })
+          .eq('id', budget.id);
+
+        if (error) {
+          console.error('Error updating budgets:', error);
         }
       }
     }
@@ -160,6 +202,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
           prevTransactions.filter((transaction) => transaction.id !== transactionID)
         );
         await updateGoalAmounts(transaction_amount, new Date(transaction_timestamp));
+        await updateBudgets(transaction_amount, new Date(transaction_timestamp));
       }
     } catch (error) {
       console.error('Error deleting transaction', error);

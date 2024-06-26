@@ -1,15 +1,19 @@
-import BottomTabs from '@/components/BottomTabs'
-import {Text, View} from 'react-native'
+import styles from "../../../styles/styles.js";
 import { SafeAreaView } from "react-native-safe-area-context";
-import styles from '@/styles/styles';
+import { useLocalSearchParams } from "expo-router";
+import Budgets from "@/components/Budgets";
+import BottomTabs from "@/components/BottomTabs";
+import { Pressable, Text} from "react-native";
+import {router} from "expo-router"
 
-const BudgetPage = () => {
-    return (
+const ViewBudgets = () => {
+  const {userID} = useLocalSearchParams();
+  return (
     <SafeAreaView style = {styles.indexContainer}>
-        <Text>BudgetPage</Text>
-        <BottomTabs />
+      <Budgets userID = {userID} />
+      <BottomTabs />
     </SafeAreaView>
-    )
-}
+  );
+};
 
-export default BudgetPage;
+export default ViewBudgets;

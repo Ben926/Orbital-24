@@ -13,6 +13,15 @@ type Goal = {
   description: string;
 };
 
+type Budget = {
+  id: string;
+  budget_amount: number;
+  amount_spent: number;
+  start_date: string;
+  end_date: string;
+  description: string;
+};
+
 type Category = {
   id: string;
   user_id: string;
@@ -74,6 +83,18 @@ const CreateTransactionForm = ({ userID }) => {
     }
     return data as Goal[];
   };
+
+  const fetchBudgets = async () => {
+    const { data, error } = await supabase
+      .from(`budget_plan_${userID.replace(/-/g, '')}`)
+      .select('*');
+    if (error) {
+      console.error("Error fetching budgets:", error);
+      return [];
+    } 
+    return data as Budget[];
+  };
+
   const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
     const goals = await fetchGoals();
 
@@ -88,6 +109,29 @@ const CreateTransactionForm = ({ userID }) => {
 
         if (error) {
           console.error('Error updating goal amount:', error);
+        }
+      }
+    }
+  };
+
+  const updateBudgets = async (amount: number, transactionDate: Date) => {
+    if (amount>0) {
+      return;
+    }
+    const budgets = await fetchBudgets();
+
+    for (const budget of budgets) {
+      if (getSingaporeDate(new Date(budget.start_date)) <= transactionDate 
+      && getSingaporeDate(new Date(budget.end_date)) > transactionDate) {
+        budget.amount_spent -= amount;
+
+        const { error } = await supabase
+          .from(`budget_plan_${userID.replace(/-/g, '')}`)
+          .update({ amount_spent: budget.amount_spent })
+          .eq('id', budget.id);
+
+        if (error) {
+          console.error('Error updating budgets:', error);
         }
       }
     }
@@ -127,6 +171,7 @@ const CreateTransactionForm = ({ userID }) => {
         } else {
           Alert.alert('Success', 'Transaction created successfully!');
           await updateGoalAmounts(transactionAmount, transaction.timestamp);
+          await updateBudgets(transactionAmount, transaction.timestamp);
           setSelectedCategory('');
           setAmount('');
           setDescription('');
@@ -253,7 +298,7 @@ const CreateTransactionForm = ({ userID }) => {
         .update({ name: newCategoryName })
         .eq('id', category.id);
 
-      
+
       if (error_raw_records_table || error_categories_table) {
         console.error('Error updating category');
       } else {
