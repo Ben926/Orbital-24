@@ -5,6 +5,7 @@ import supabase from "../supabase/supabase";
 import { router } from "expo-router";
 import styles from '@/styles/styles';
 import PieChartComponent from '@/components/PieChart';
+import TransactionForm from "@/components/TransactionForm";
 
 type Goal = {
   id: string;
@@ -59,6 +60,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   const [showInflowPieChart, setShowInflowPieChart] = useState<Boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
@@ -212,6 +214,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   };
 
   const renderItem = ({ item }: { item: Transaction }) => (
+    item ? (
     <View style={styles.transactionItem}>
         <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
         <View style={styles.transactionContent}>
@@ -236,6 +239,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </View>
         </View>
     </View>
+    ) : null
 );
 
 
@@ -269,7 +273,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </View>
           <FlatList
             data={filteredTransactions}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item?.id?.toString() ?? ''}
             renderItem={renderItem}
           />
         </>
@@ -292,6 +296,24 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
               <Text style={styles.buttonText}>Done</Text>
             </TouchableOpacity>
           </View>
+        </View>
+      </Modal>
+
+      <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
+        <Text style={styles.transparentButtonText}>Create New Transaction</Text>
+      </Pressable>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.transactionFormContainer}>
+          <TransactionForm userID={userID} items={transactions} setItems={setTransactions}/>
+          <Pressable style={styles.transparentButton} onPress={() => setModalVisible(false)}>
+            <Text style={styles.transparentButtonText}>Close</Text>
+          </Pressable>
         </View>
       </Modal>
     </View>

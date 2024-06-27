@@ -148,23 +148,7 @@ const Home = () => {
       </View>
       <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
 
-      <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
-        <Text style={styles.transparentButtonText}>Create New Transaction</Text>
-      </Pressable>
-
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.transactionFormContainer}>
-          <TransactionForm userID={userID} />
-          <Pressable style={styles.transparentButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.transparentButtonText}>Close</Text>
-          </Pressable>
-        </View>
-      </Modal>
+      
 
       <BottomTabs />
     </SafeAreaView>

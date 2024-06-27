@@ -29,7 +29,7 @@ type Category = {
   name: string;
 };
 
-const CreateTransactionForm = ({ userID }) => {
+const CreateTransactionForm = ({ userID, items, setItems }) => {
   const getSingaporeDate = (date = new Date()) => {
     const offsetDate = new Date(date);
     offsetDate.setHours(offsetDate.getHours() + 8);
@@ -172,6 +172,7 @@ const CreateTransactionForm = ({ userID }) => {
           Alert.alert('Success', 'Transaction created successfully!');
           await updateGoalAmounts(transactionAmount, transaction.timestamp);
           await updateBudgets(transactionAmount, transaction.timestamp);
+          setItems((prev) => [...prev, transaction]);
           setSelectedCategory('');
           setAmount('');
           setDescription('');
