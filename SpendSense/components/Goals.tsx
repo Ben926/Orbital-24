@@ -82,7 +82,11 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
     };
 
     const addGoal = async () => {
-        if (newGoal.trim() && budgetAmount.trim()) {
+        if (isNaN(parseFloat(budgetAmount))) {
+            Alert.alert('Key in a valid amount')
+            
+        }
+        else if (newGoal.trim() && budgetAmount.trim()) {
             const calculatedCurrentAmount = await calculateCurrentAmount(getSingaporeDate(date));
             const { data, error } = await supabase
                 .from(`spending_goals_${userID.replace(/-/g, '')}`)

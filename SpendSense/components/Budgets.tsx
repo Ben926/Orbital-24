@@ -79,7 +79,10 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
     };
 
     const addBudget = async () => {
-        if (budgetAmount.trim()) {
+        if (isNaN(parseFloat(budgetAmount))) {
+            Alert.alert('Key in a valid amount')   
+        }
+       else if (budgetAmount.trim()) {
             startDate.setHours(0, 0, 0, 0);
             endDate.setHours(23, 59, 59, 999);
             const amount_spent = await calculateAmountSpent(getSingaporeDate(startDate), getSingaporeDate(endDate));
