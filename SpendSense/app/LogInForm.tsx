@@ -67,11 +67,11 @@ const LogInForm = () => {
       <Pressable onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </Pressable>
-      <Pressable style={styles.transparentButton} onPress={handleLogin}>
-        <Text style={styles.transparentButtonText}>Log In</Text>
+      <Pressable style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Log In</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => router.back()}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Pressable style={styles.transparentButton} onPress={() => router.back()}>
+        <Text style={styles.transparentButtonText}>Back</Text>
       </Pressable>
     </SafeAreaView>
   );

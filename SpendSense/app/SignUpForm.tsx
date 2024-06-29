@@ -95,11 +95,11 @@ const SignUpForm = () => {
         style={styles.input}
         secureTextEntry
       />
-      <Pressable style={styles.transparentButton} onPress={handleSignup}>
-        <Text style={styles.transparentButtonText}>Sign Up</Text>
+      <Pressable style={styles.button} onPress={handleSignup}>
+        <Text style={styles.buttonText}>Sign Up</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => router.back()}>
-        <Text style={styles.buttonText}>Back</Text>
+      <Pressable style={styles.transparentButton} onPress={() => router.back()}>
+        <Text style={styles.transparentButtonText}>Back</Text>
       </Pressable>
     </SafeAreaView>
   );
