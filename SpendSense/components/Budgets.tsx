@@ -79,7 +79,10 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
     };
 
     const addBudget = async () => {
-        if (isNaN(parseFloat(budgetAmount))) {
+        if (!budgetAmount) {
+            Alert.alert('Please fill in the goal and amount!')
+        }
+        else if (isNaN(parseFloat(budgetAmount))) {
             Alert.alert('Key in a valid amount')   
         }
        else if (budgetAmount.trim()) {
@@ -112,9 +115,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                 setStartDate(new Date());
                 setEndDate(new Date());
             }
-        } else {
-            Alert.alert('Please fill in the goal and amount!')
-        }
+        } 
     };
     const deleteBudget = async (budgetID: string) => {
         try {

@@ -214,7 +214,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   };
 
   const renderItem = ({ item }: { item: Transaction }) => (
-    item ? (
+ 
     <View style={styles.transactionItem}>
         <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
         <View style={styles.transactionContent}>
@@ -239,7 +239,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </View>
         </View>
     </View>
-    ) : null
+
 );
 
 
@@ -273,7 +273,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </View>
           <FlatList
             data={filteredTransactions}
-            keyExtractor={(item) => item?.id?.toString() ?? ''}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={renderItem}
           />
         </>

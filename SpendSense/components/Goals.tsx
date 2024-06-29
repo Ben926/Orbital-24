@@ -82,7 +82,11 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
     };
 
     const addGoal = async () => {
-        if (isNaN(parseFloat(budgetAmount))) {
+        if (!budgetAmount) {
+            Alert.alert('Please fill in the goal and amount!')
+
+        }
+        else if (isNaN(parseFloat(budgetAmount))) {
             Alert.alert('Key in a valid amount')
             
         }
@@ -114,9 +118,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                 setModalVisible(false);
                 setDate(new Date());
             }
-        } else {
-            Alert.alert('Please fill in the goal and amount!')
-        }
+        } 
     };
     const deleteGoal = async (goalID: string) => {
         try {
