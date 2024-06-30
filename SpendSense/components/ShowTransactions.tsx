@@ -61,10 +61,11 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshTransactions, setRefreshTransactions] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, refreshTransactions]);
 
   useEffect(() => { fetchPieChartData() }, [transactions]);
 
@@ -85,6 +86,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       }
     } finally {
       setLoading(false);
+      setRefreshTransactions(false);
     }
   };
 
@@ -144,7 +146,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
     if (error) {
       console.error("Error fetching budgets:", error);
       return [];
-    } 
+    }
     return data as Budget[];
   };
 
@@ -168,7 +170,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   };
 
   const updateBudgets = async (amount: number, transactionDate: Date) => {
-    if (amount>0) {
+    if (amount > 0) {
       return;
     }
     const budgets = await fetchBudgets();
@@ -214,33 +216,33 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   };
 
   const renderItem = ({ item }: { item: Transaction }) => (
- 
+
     <View style={styles.transactionItem}>
-        <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
-        <View style={styles.transactionContent}>
-            <View style={styles.transactionHeader}>
-                <Text style={styles.transactionDescription}>{item.description}</Text>
-                <TouchableOpacity
-                    style={styles.deleteButton}
-                    onPress={() => deleteTransaction(item.id, item.amount, item.timestamp)}
-                    disabled={deleting}
-                >
-                    <Text style={styles.deleteButtonText}>x</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.transactionDetails}>
-                <Text style={styles.transactionCategory}>{item.category}</Text>
-                <Text style={styles.transactionDate}>{item.date}</Text>
-            </View>
-            <View style={styles.transactionFooter}>
-                
-                <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
-                <Text style={styles.transactionAmount}>{item.amount < 0 ? `-$${Math.abs(item.amount)}` : `+$${item.amount}`}</Text>
-            </View>
+      <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
+      <View style={styles.transactionContent}>
+        <View style={styles.transactionHeader}>
+          <Text style={styles.transactionDescription}>{item.description}</Text>
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={() => deleteTransaction(item.id, item.amount, item.timestamp)}
+            disabled={deleting}
+          >
+            <Text style={styles.deleteButtonText}>x</Text>
+          </TouchableOpacity>
         </View>
+        <View style={styles.transactionDetails}>
+          <Text style={styles.transactionCategory}>{item.category}</Text>
+          <Text style={styles.transactionDate}>{item.date}</Text>
+        </View>
+        <View style={styles.transactionFooter}>
+
+          <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
+          <Text style={styles.transactionAmount}>{item.amount < 0 ? `-$${Math.abs(item.amount)}` : `+$${item.amount}`}</Text>
+        </View>
+      </View>
     </View>
 
-);
+  );
 
 
   const filteredTransactions = selectedCategory
@@ -267,10 +269,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </>
           )}
           <View style={styles.topRightButtonContainer}>
-         {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAll/${userID}`)}>
-            <Text style={styles.viewAllButtonText}>View All</Text>
-          </Pressable>}
-            </View>
+            {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAll/${userID}`)}>
+              <Text style={styles.viewAllButtonText}>View All</Text>
+            </Pressable>}
+          </View>
           <FlatList
             data={filteredTransactions}
             keyExtractor={(item) => item.id.toString()}
@@ -310,8 +312,8 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.transactionFormContainer}>
-          <TransactionForm userID={userID} items={transactions} setItems={setTransactions}/>
-          <Pressable style={styles.transparentButton} onPress={() => setModalVisible(false)}>
+          <TransactionForm userID={userID} items={transactions} setItems={setTransactions} />
+          <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); setRefreshTransactions(true) }}>
             <Text style={styles.transparentButtonText}>Close</Text>
           </Pressable>
         </View>
