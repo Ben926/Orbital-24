@@ -269,7 +269,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
             </>
           )}
           <View style={styles.topRightButtonContainer}>
-            {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAll/${userID}`)}>
+            {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAllPage`)}>
               <Text style={styles.viewAllButtonText}>View All</Text>
             </Pressable>}
           </View>

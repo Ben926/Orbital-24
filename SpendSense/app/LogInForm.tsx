@@ -6,19 +6,22 @@ import { Ionicons } from '@expo/vector-icons';
 const logoImg = require("../assets/images/spendsense-logo.png");
 import styles from '../styles/styles';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useUser } from '../contexts/UserContext';
 
 const LogInForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false); 
+  const { setUserID } = useUser();
   const handleLogin = async () => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       Alert.alert("Login Error", error.message);
     } else {
       const userID = data.user.id;
+      setUserID(userID);
       Alert.alert("Success", "Logged in successfully");
-      router.replace(`${userID}`);
+      router.replace(`Home`);
     }
   };
 

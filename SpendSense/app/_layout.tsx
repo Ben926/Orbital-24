@@ -1,6 +1,7 @@
 import { Stack } from "expo-router";
 import { useFonts } from 'expo-font';
 import { ActivityIndicator } from "react-native";
+import { UserProvider } from "@/contexts/UserContext";
 
 export default function Layout() {
 
@@ -12,11 +13,14 @@ export default function Layout() {
   if (!fontsLoaded) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
-  return (<Stack>
-    <Stack.Screen name = "SplashScreen" options = {{title: "", headerShown: false}}></Stack.Screen>
-    <Stack.Screen name = "index" options = {{title: "", headerShown: false}}></Stack.Screen>
-    <Stack.Screen name = "SignUpForm" options = {{title: "", headerShown: false}}></Stack.Screen>
-    <Stack.Screen name = "LogInForm" options = {{title: "", headerShown: false}}></Stack.Screen>
-    <Stack.Screen name = "(home)" options = {{title: "", headerShown: false}} ></Stack.Screen>
-  </Stack>);
+  return (<UserProvider>
+    <Stack>
+      <Stack.Screen name="SplashScreen" options={{ title: "", headerShown: false }}></Stack.Screen>
+      <Stack.Screen name="index" options={{ title: "", headerShown: false }}></Stack.Screen>
+      <Stack.Screen name="SignUpForm" options={{ title: "", headerShown: false }}></Stack.Screen>
+      <Stack.Screen name="LogInForm" options={{ title: "", headerShown: false }}></Stack.Screen>
+      <Stack.Screen name="(pages)" options={{ title: "", headerShown: false }} ></Stack.Screen>
+      <Stack.Screen name="(pages2)" options={{ title: "", headerShown: false }} ></Stack.Screen>
+    </Stack>
+  </UserProvider>);
 }

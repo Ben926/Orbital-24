@@ -1,17 +1,14 @@
 import { Text, Pressable, View, Modal } from "react-native";
 import { useState } from "react";
-import styles from "../../styles/styles.js";
+import styles from "@/styles/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TransactionForm from "@/components/TransactionForm";
-import { useLocalSearchParams, router } from "expo-router";
-import BottomTabs from "@/components/BottomTabs";
 import ShowTransactions from "@/components/ShowTransactions";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useUser } from '@/contexts/UserContext'; 
 
 
 const Home = () => {
-  const { userID } = useLocalSearchParams();
-  const [modalVisible, setModalVisible] = useState(false);
+  const { userID } = useUser();
   const [timePeriod, setTimePeriod] = useState('daily');
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
@@ -147,10 +144,6 @@ const Home = () => {
           onChange={onManualEndDateChange} />}
       </View>
       <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
-
-      
-
-      <BottomTabs />
     </SafeAreaView>
   );
 }
