@@ -62,6 +62,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [refreshTransactions, setRefreshTransactions] = useState(false);
+  const [hideChart, setHideChart] = useState(!showChart);
 
   useEffect(() => {
     fetchTransactions();
@@ -259,18 +260,23 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         <>
           {transactions.length !== 0 && (
             <>
-              {showChart && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
+            {showChart && <View style={styles.topRightButtonContainer}>
+              <Pressable style={styles.viewAllButton} onPress={() => setHideChart(!hideChart)}>
+                <Text style={styles.viewAllButtonText}>{hideChart ? "Show Pie Chart" : "Hide Pie Chart"}</Text>
+              </Pressable>
+            </View>}
+              {!hideChart && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
                 {<Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>}
               </TouchableOpacity>}
-              {showChart && <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />}
+              {!hideChart && <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />}
               <TouchableOpacity style={styles.button} onPress={() => setIsFilterModalVisible(true)}>
-                <Text style={styles.buttonText}>Filter</Text>
+                <Text style={styles.buttonText}>{selectedCategory || "Filter"}</Text>
               </TouchableOpacity>
             </>
           )}
           <View style={styles.topRightButtonContainer}>
             {showAll && <Pressable style={styles.viewAllButton} onPress={() => router.push(`ViewAllPage`)}>
-              <Text style={styles.viewAllButtonText}>View All</Text>
+              <Text style={styles.viewAllButtonText}>View All Records</Text>
             </Pressable>}
           </View>
           <FlatList
@@ -301,7 +307,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
         </View>
       </Modal>
 
-      <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
+      <Pressable style={styles.createTransactionButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.transparentButtonText}>Create New Transaction</Text>
       </Pressable>
 
@@ -318,6 +324,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
           </Pressable>
         </View>
       </Modal>
+
     </View>
   );
 };

@@ -151,7 +151,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
     };
 
     return (
-        <SafeAreaView style={styles.transactionContainer}>
+        <View style={styles.transactionContainer}>
             <FlatList
                 data={goals}
                 keyExtractor={(item) => item.id}
@@ -189,7 +189,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                 )}
             />
             <TouchableOpacity
-                style={styles.transparentButton}
+                style={styles.createTransactionButton}
                 onPress={() => setModalVisible(true)}
             >
                 <Text style={styles.transparentButtonText}>Add New Goal</Text>
@@ -259,7 +259,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+        </View>
     );
 };
 

@@ -145,7 +145,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
     };
 
     return (
-        <SafeAreaView style={styles.transactionContainer}>
+        <View style={styles.transactionContainer}>
             <FlatList
                 data={budgets}
                 keyExtractor={(item) => item.id}
@@ -184,7 +184,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                 )}
             />
             <TouchableOpacity
-                style={styles.transparentButton}
+                style={styles.createTransactionButton}
                 onPress={() => setModalVisible(true)}
             >
                 <Text style={styles.transparentButtonText}>Add New Budget</Text>
@@ -246,7 +246,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                     </View>
                 </View>
             </Modal>
-        </SafeAreaView>
+        </View>
     );
 };
 

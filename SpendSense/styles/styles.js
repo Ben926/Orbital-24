@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   indexContainer: {
     paddingTop: 16,
-    paddingBottom: 20,
     flex: 1,
     backgroundColor: "white",
   },
@@ -78,7 +77,7 @@ const styles = StyleSheet.create({
   buttonGroup: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    
+
   },
   button: {
     backgroundColor: '#49D469',
@@ -125,6 +124,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     borderRadius: 0,
     marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  backButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 10,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    marginVertical: 10,
+    alignItems: 'center',
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
+  createTransactionButton: {
+    backgroundColor: 'transparent',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
     alignItems: 'center',
     shadowColor: 'transparent',
     shadowOffset: { width: 0, height: 0 },
@@ -216,91 +240,92 @@ const styles = StyleSheet.create({
   },
   transactionContainer: {
     flex: 1,
-    padding: 20,
+    paddingTop: 20,
+    paddingHorizontal: 20,
     backgroundColor: '#fff',
   },
   transactionItem: {
-      flexDirection: 'row',
-      paddingLeft: 15,
-      paddingRight: 15,
-      paddingTop: 10,
-      paddingBottom: 10,
-      marginVertical: 8,
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 8,
-      backgroundColor: '#f9f9f9',
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
   },
   colorIndicator: {
-      width: 15,
-      height: 50,
-      borderRadius: 5,
-      marginRight: 15,
-      marginBottom: 10,
-      marginTop: 10
+    width: 15,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 15,
+    marginBottom: 10,
+    marginTop: 10
   },
   transactionContent: {
-      flex: 1,
+    flex: 1,
   },
   transactionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   transactionDescription: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      flex: 1,
-      fontFamily: 'Figtree'
+    fontSize: 18,
+    fontWeight: 'bold',
+    flex: 1,
+    fontFamily: 'Figtree'
   },
   deleteButton: {
-      marginLeft: 10,
-      backgroundColor: 'rgba(255, 0, 0, 0.6)',
-      borderRadius: 5,
-      padding: 5,
+    marginLeft: 10,
+    backgroundColor: 'rgba(255, 0, 0, 0.6)',
+    borderRadius: 5,
+    padding: 5,
   },
   deleteButtonText: {
-      color: 'white',
-      fontWeight: 'bold',
+    color: 'white',
+    fontWeight: 'bold',
   },
   transactionDetails: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 8,
-      
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+
   },
   transactionCategory: {
-      fontSize: 14,
-      color: '#555',
-      fontFamily: 'Figtree'
+    fontSize: 14,
+    color: '#555',
+    fontFamily: 'Figtree'
   },
   transactionDate: {
-      fontSize: 14,
-      color: '#555',
+    fontSize: 14,
+    color: '#555',
   },
   transactionFooter: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   transactionAmount: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: '#000',
-      fontFamily: 'Figtree'
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    fontFamily: 'Figtree'
   },
   transactionTimestamp: {
-      fontSize: 12,
-      color: '#888',
-      fontFamily: 'Figtree'
+    fontSize: 12,
+    color: '#888',
+    fontFamily: 'Figtree'
   },
   topRightButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginRight: 10,
-    
+
   },
   viewAllButton: {
     padding: 5,
