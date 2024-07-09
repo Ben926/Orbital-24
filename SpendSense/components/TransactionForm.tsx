@@ -25,8 +25,10 @@ type Budget = {
 type Category = {
   id: string;
   user_id: string;
-  created_at: string;
   name: string;
+  log: string;
+  outflow: boolean;
+  color: string;
 };
 
 const CreateTransactionForm = ({ userID }) => {
@@ -36,7 +38,8 @@ const CreateTransactionForm = ({ userID }) => {
     return offsetDate;
   };
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [date, setDate] = useState<Date>(new Date());
@@ -138,28 +141,22 @@ const CreateTransactionForm = ({ userID }) => {
   };
 
   const handleSubmit = async () => {
-    if (!amount || !selectedCategory) {
+    if (!amount || !selectedCategoryName || !selectedCategory) {
       Alert.alert("Please select category and input a non-zero amount!");
     } else if (isNaN(parseFloat(amount))) {
       Alert.alert('Key in a valid amount')
     } else if (parseFloat(amount) == 0) {
       Alert.alert('Amount cannot be zero!')
     } else {
-      let { data: category_record, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('user_id', userID)
-        .eq('name', selectedCategory)
-        .single()
-      const transactionAmount = category_record.outflow ? -parseFloat(amount) : parseFloat(amount);
+      const transactionAmount = selectedCategory.outflow ? -parseFloat(amount) : parseFloat(amount);
 
       const transaction = {
         amount: transactionAmount,
-        category: selectedCategory,
+        category: selectedCategoryName,
         log: getSingaporeDate(),
         description,
         timestamp: showDateTimePicker ? getSingaporeDate(date) : getSingaporeDate(),
-        color: category_record.color
+        color: selectedCategory.color
       };
       try {
         const { error } = await supabase
@@ -172,7 +169,8 @@ const CreateTransactionForm = ({ userID }) => {
           Alert.alert('Success', 'Transaction created successfully!');
           await updateGoalAmounts(transactionAmount, transaction.timestamp);
           await updateBudgets(transactionAmount, transaction.timestamp);
-          setSelectedCategory('');
+          setSelectedCategory(null);
+          setSelectedCategoryName('');
           setAmount('');
           setDescription('');
           setDate(new Date());
@@ -196,10 +194,15 @@ const CreateTransactionForm = ({ userID }) => {
 
   const renderCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
-      style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
-      onPress={() => setSelectedCategory(item.name)}
+      style={[styles.categorySquare, selectedCategoryName === item.name && styles.selectedCategory]}
+      onPress={() => {setSelectedCategoryName(item.name); setSelectedCategory(item);}}
     >
       <Text style={styles.categoryText}>{item.name}</Text>
+      {selectedCategoryName === item.name && (
+        <Text style={styles.signText}>
+          {item.outflow ? "-" : '+'}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 
@@ -207,13 +210,20 @@ const CreateTransactionForm = ({ userID }) => {
 
   const renderEditCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
-      style={[styles.categorySquare, selectedCategory === item.name && styles.selectedCategory]}
+      style={[styles.categorySquare, selectedCategoryName === item.name && styles.selectedCategory]}
       onPress={() => {
         setEditingCategory(item);
-        setSelectedCategory(item.name)
+        setSelectedCategoryName(item.name)
+        setSelectedCategory(item)
       }}
     >
       <Text style={styles.categoryText}>{item.name}</Text>
+      {selectedCategoryName === item.name && (
+        <Text>
+          {item.outflow ? "-" : '+'}
+        </Text>
+      )}
+      
     </TouchableOpacity>
   );
 
