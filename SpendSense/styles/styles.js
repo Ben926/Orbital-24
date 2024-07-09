@@ -18,6 +18,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     flex: 1,
   },
+  formContainer: {
+    paddingHorizontal: 16,
+    backgroundColor: 'white',
+    flex: 1,
+  },
   logoContainer: {
     alignItems: 'center',
   },

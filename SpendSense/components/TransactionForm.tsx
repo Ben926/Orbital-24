@@ -195,7 +195,7 @@ const CreateTransactionForm = ({ userID }) => {
   const renderCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
       style={[styles.categorySquare, selectedCategoryName === item.name && styles.selectedCategory]}
-      onPress={() => {setSelectedCategoryName(item.name); setSelectedCategory(item);}}
+      onPress={() => { setSelectedCategoryName(item.name); setSelectedCategory(item); }}
     >
       <Text style={styles.categoryText}>{item.name}</Text>
       {selectedCategoryName === item.name && (
@@ -223,7 +223,7 @@ const CreateTransactionForm = ({ userID }) => {
           {item.outflow ? "-" : '+'}
         </Text>
       )}
-      
+
     </TouchableOpacity>
   );
 
@@ -334,7 +334,7 @@ const CreateTransactionForm = ({ userID }) => {
       Alert.alert("Cannot delete category as there are exsiting records!")
       return;
     }
-    
+
     try {
       const { error } = await supabase
         .from('categories')
@@ -353,7 +353,7 @@ const CreateTransactionForm = ({ userID }) => {
   };
 
   return (
-    <View style={styles.loginContainer}>
+    <View style={styles.formContainer}>
       <Text style={styles.welcomeText}>Create Transaction</Text>
       <View style={styles.categoryGridContainer}>
         <FlatList
@@ -389,7 +389,11 @@ const CreateTransactionForm = ({ userID }) => {
         value={description}
         onChangeText={setDescription}
       />
-      <TouchableOpacity style={styles.button} onPress={() => setEditModalVisible(true)}>
+      <TouchableOpacity style={styles.button}
+        onPress={() => {
+          setEditModalVisible(true);
+          setSelectedCategory(null); setSelectedCategoryName("")
+        }}>
         <Text style={styles.buttonText}>Edit Categories</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => setShowDateTimePicker(!showDateTimePicker)}>
