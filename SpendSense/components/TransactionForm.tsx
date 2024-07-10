@@ -3,6 +3,7 @@ import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatLi
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
+import { useUser } from '@/contexts/UserContext';
 
 type Goal = {
   id: string;
@@ -31,12 +32,13 @@ type Category = {
   color: string;
 };
 
-const CreateTransactionForm = ({ userID }) => {
+const CreateTransactionForm = () => {
   const getSingaporeDate = (date = new Date()) => {
     const offsetDate = new Date(date);
     offsetDate.setHours(offsetDate.getHours() + 8);
     return offsetDate;
   };
+  const { userID, refreshUserData, setRefreshUserData } = useUser();
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
@@ -169,6 +171,7 @@ const CreateTransactionForm = ({ userID }) => {
           Alert.alert('Success', 'Transaction created successfully!');
           await updateGoalAmounts(transactionAmount, transaction.timestamp);
           await updateBudgets(transactionAmount, transaction.timestamp);
+          setRefreshUserData(true);
           setSelectedCategory(null);
           setSelectedCategoryName('');
           setAmount('');

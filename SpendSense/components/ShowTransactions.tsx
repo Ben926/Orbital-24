@@ -6,6 +6,7 @@ import { router } from "expo-router";
 import styles from '@/styles/styles';
 import PieChartComponent from '@/components/PieChart';
 import TransactionForm from "@/components/TransactionForm";
+import { useUser } from '../contexts/UserContext';
 
 type Goal = {
   id: string;
@@ -36,7 +37,6 @@ type Transaction = {
 };
 
 interface ShowTransactionsProps {
-  userID: string;
   startDate: string;
   endDate: string;
   showChart: boolean;
@@ -51,8 +51,9 @@ type PieChartData = {
   legendFontSize: number;
 };
 
-const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, endDate, showChart = true, showAll = true }) => {
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { userID, refreshUserData, setRefreshUserData } = useUser();
   const [loading, setLoading] = useState<boolean>(true);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
@@ -61,12 +62,11 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [refreshTransactions, setRefreshTransactions] = useState(false);
   const [hideChart, setHideChart] = useState(!showChart);
 
   useEffect(() => {
     fetchTransactions();
-  }, [startDate, endDate, refreshTransactions]);
+  }, [startDate, endDate, refreshUserData]);
 
   useEffect(() => { fetchPieChartData() }, [transactions]);
 
@@ -87,7 +87,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       }
     } finally {
       setLoading(false);
-      setRefreshTransactions(false);
+      setRefreshUserData(false);
     }
   };
 
@@ -213,6 +213,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       console.error('Error deleting transaction', error);
     } finally {
       setDeleting(false);
+      setRefreshUserData(true);
     }
   };
 
@@ -295,7 +296,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
               onValueChange={(itemValue) => setSelectedCategory(itemValue)}
               style={styles.filterPicker}
             >
-              <Picker.Item label="All" value="" />
+              <Picker.Item label="" value="" />
               {categories.map(category => (
                 <Picker.Item key={category} label={category} value={category} />
               ))}
@@ -319,7 +320,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ userID, startDate, 
       >
         <View style={styles.transactionFormContainer}>
           <TransactionForm userID={userID} items={transactions} setItems={setTransactions} />
-          <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); setRefreshTransactions(true) }}>
+          <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); }}>
             <Text style={styles.transparentButtonText}>Close</Text>
           </Pressable>
         </View>

@@ -4,11 +4,8 @@ import styles from "@/styles/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ShowTransactions from "@/components/ShowTransactions";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useUser } from '@/contexts/UserContext'; 
-
 
 const Home = () => {
-  const { userID } = useUser();
   const [timePeriod, setTimePeriod] = useState('daily');
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
@@ -143,7 +140,7 @@ const Home = () => {
           display="default"
           onChange={onManualEndDateChange} />}
       </View>
-      <ShowTransactions userID={userID} startDate={getStartDate()} endDate={getEndDate()} />
+      <ShowTransactions startDate={getStartDate()} endDate={getEndDate()} />
     </SafeAreaView>
   );
 }

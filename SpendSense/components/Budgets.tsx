@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert, } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { useLocalSearchParams } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import styles from '@/styles/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 import supabase from '@/supabase/supabase';
+import { useUser } from '@/contexts/UserContext';
 
 type Budget = {
     id: string;
@@ -17,11 +15,8 @@ type Budget = {
     description: string;
 };
 
-interface BudgetsProps {
-    userID: string;
-}
-
-const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
+const BudgetPage = () => {
+    const { userID, refreshUserData, setRefreshUserData } = useUser();
     const [budgets, setBudgets] = useState<Budget[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [budgetAmount, setBudgetAmount] = useState('');
@@ -45,7 +40,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
 
     useEffect(() => {
         fetchBudgets();
-    }, []);
+    }, [refreshUserData]);
 
 
     const fetchBudgets = async () => {
@@ -56,6 +51,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
             console.error(error);
         } else {
             setBudgets(data as Budget[]);
+            setRefreshUserData(false);
         }
     };
 
@@ -80,12 +76,12 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
 
     const addBudget = async () => {
         if (!budgetAmount) {
-            Alert.alert('Please fill in the goal and amount!')
+            Alert.alert('Please fill in the budget amount!')
         }
         else if (isNaN(parseFloat(budgetAmount))) {
-            Alert.alert('Key in a valid amount')   
+            Alert.alert('Key in a valid amount')
         }
-       else if (budgetAmount.trim()) {
+        else if (budgetAmount.trim()) {
             startDate.setHours(0, 0, 0, 0);
             endDate.setHours(23, 59, 59, 999);
             const amount_spent = await calculateAmountSpent(getSingaporeDate(startDate), getSingaporeDate(endDate));
@@ -115,7 +111,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                 setStartDate(new Date());
                 setEndDate(new Date());
             }
-        } 
+        }
     };
     const deleteBudget = async (budgetID: string) => {
         try {
@@ -153,7 +149,7 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                     <View style={styles.transactionItem}>
                         <View style={styles.transactionContent}>
                             <View style={styles.transactionHeader}>
-                                <Text style={styles.transactionAmount}>Budget: ${item.budget_amount}</Text>
+                            <Text style={styles.transactionDescription}>{item.description}</Text>
                                 <TouchableOpacity
                                     style={styles.deleteButton}
                                     onPress={() => deleteBudget(item.id)}
@@ -162,12 +158,10 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.transactionAmount}>Amount Spent: ${item.amount_spent}</Text>
+                            <Text style={styles.transactionAmount}>${item.amount_spent} / ${item.budget_amount}</Text>
                             <Text style={styles.transactionTimestamp}>
-                    {`${formatDate(item.start_date)} - ${formatDate(item.end_date)}`}
-                </Text>
-
-                            <Text style={styles.transactionDescription}>Description: {item.description}</Text>
+                                {`${formatDate(item.start_date)} - ${formatDate(item.end_date)}`}
+                            </Text>
                             <View style={styles.row}>
                                 <Progress.Bar
                                     progress={(item.amount_spent / item.budget_amount)}
@@ -177,8 +171,9 @@ const BudgetPage: React.FC<BudgetsProps> = ({ userID }) => {
                                     borderRadius={5}
                                     style={{ flex: 1, marginRight: 10 }}
                                 />
-                                <Text>{Math.round(item.amount_spent/item.budget_amount*100)}%</Text>
+                                <Text>{Math.round(item.amount_spent / item.budget_amount * 100)}%</Text>
                             </View>
+                            {Math.round(item.amount_spent / item.budget_amount * 100) >= 100 && <Text>You've exceeded your budget!❌</Text>}
                         </View>
                     </View>
                 )}

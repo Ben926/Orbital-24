@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert, } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { useLocalSearchParams } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
 import styles from '@/styles/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import { useUser } from '@/contexts/UserContext';
 import supabase from '@/supabase/supabase';
 
 type Goal = {
@@ -17,11 +15,9 @@ type Goal = {
     description: string;
 };
 
-interface GoalsProps {
-    userID: string;
-}
 
-const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
+const GoalPage = () => {
+    const { userID, refreshUserData, setRefreshUserData } = useUser();
     const [goals, setGoals] = useState<Goal[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [newGoal, setNewGoal] = useState('');
@@ -32,7 +28,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
         const offsetDate = new Date(date);
         offsetDate.setHours(offsetDate.getHours() + 8);
         return offsetDate;
-      };
+    };
     const onDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -45,7 +41,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
 
     useEffect(() => {
         fetchGoals();
-    }, []);
+    }, [refreshUserData]);
 
 
     const fetchGoals = async () => {
@@ -56,6 +52,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
             console.error(error);
         } else {
             setGoals(data as Goal[]);
+            setRefreshUserData(false);
         }
     };
     const calculateCurrentAmount = async (startDate: Date) => {
@@ -71,7 +68,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
             .select('amount')
             .lt('amount', 0)
             .gte('timestamp', formattedStartDate)
-        
+
         if (incomeError || expenseError) {
             console.error(incomeError || expenseError);
             return 0;
@@ -82,13 +79,13 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
     };
 
     const addGoal = async () => {
-        if (!budgetAmount) {
+        if (!budgetAmount || !newGoal) {
             Alert.alert('Please fill in the goal and amount!')
 
         }
         else if (isNaN(parseFloat(budgetAmount))) {
             Alert.alert('Key in a valid amount')
-            
+
         }
         else if (newGoal.trim() && budgetAmount.trim()) {
             const calculatedCurrentAmount = await calculateCurrentAmount(getSingaporeDate(date));
@@ -118,7 +115,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                 setModalVisible(false);
                 setDate(new Date());
             }
-        } 
+        }
     };
     const deleteGoal = async (goalID: string) => {
         try {
@@ -172,7 +169,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                             <View style={styles.transactionFooter}>
                                 <Text style={styles.transactionTimestamp}>Start Date: {formatTimestamp(item.start_date)}</Text>
                             </View>
-                            <Text style={styles.transactionDescription}>Description: {item.description}</Text>
+                            {item.description && <Text style={styles.transactionDescription}>Description: {item.description}</Text>}
                             <View style={styles.row}>
                                 <Progress.Bar
                                     progress={(item.current_amount / item.target_amount)}
@@ -184,6 +181,7 @@ const GoalPage: React.FC<GoalsProps> = ({ userID }) => {
                                 />
                                 <Text>{Math.round(Math.min((item.current_amount / item.target_amount) * 100, 100))}%</Text>
                             </View>
+                            {Math.round((item.current_amount / item.target_amount) * 100) >= 100 && <Text>Congratulations! 🎉</Text>}
                         </View>
                     </View>
                 )}
