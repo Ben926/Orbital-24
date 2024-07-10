@@ -12,5 +12,8 @@ export default function Layout() {
         <Tabs.Screen name = "GoalPage" options = {{title: "Goals", headerShown: false, tabBarIcon: ({ color, size }) => (
             <Feather name="target" size={24} color="black" />
           )}}></Tabs.Screen>
+        <Tabs.Screen name = "Stocks" options = {{title: "Stocks", headerShown: false, tabBarIcon: ({ color, size }) => (
+          <Feather name="trending-up" size={24} color="black" />
+        )}}></Tabs.Screen>
     </Tabs>
 }

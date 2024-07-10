@@ -408,7 +408,17 @@ const styles = StyleSheet.create({
   filterPicker: {
     width: '100%',
     height: 200
-  }
+  },
+  stockSymbol: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Figtree'
+  },
+  stockPrice: {
+    fontSize: 20,
+    color: '49D469',
+    fontFamily: 'Figtree'
+  },
 });
 
 export default styles;
