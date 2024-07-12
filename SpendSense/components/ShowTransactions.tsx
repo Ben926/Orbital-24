@@ -74,8 +74,9 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     setLoading(true);
     try {
       const { data, error } = await supabase
-        .from(`raw_records_${userID.replace(/-/g, '')}`)
+        .from(`raw_records`)
         .select('*')
+        .eq('user_id', userID)
         .gte('timestamp', startDate)
         .lte('timestamp', endDate)
         .order('timestamp', { ascending: false });
@@ -131,8 +132,9 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
 
   const fetchGoals = async () => {
     const { data, error } = await supabase
-      .from(`spending_goals_${userID.replace(/-/g, '')}`)
-      .select('*');
+      .from(`spending_goals`)
+      .select('*')
+      .eq('user_id', userID);
     if (error) {
       console.error('Error fetching goals:', error);
       return [];
@@ -142,8 +144,9 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
 
   const fetchBudgets = async () => {
     const { data, error } = await supabase
-      .from(`budget_plan_${userID.replace(/-/g, '')}`)
-      .select('*');
+      .from(`budget_plan`)
+      .select('*')
+      .eq('user_id', userID);
     if (error) {
       console.error("Error fetching budgets:", error);
       return [];
@@ -159,9 +162,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         goal.current_amount -= amount;
 
         const { error } = await supabase
-          .from(`spending_goals_${userID.replace(/-/g, '')}`)
+          .from(`spending_goals`)
           .update({ current_amount: goal.current_amount })
-          .eq('id', goal.id);
+          .eq('id', goal.id)
+          .eq('userID', userID);
 
         if (error) {
           console.error('Error updating goal amount:', error);
@@ -181,9 +185,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         budget.amount_spent += amount;
 
         const { error } = await supabase
-          .from(`budget_plan_${userID.replace(/-/g, '')}`)
+          .from(`budget_plan`)
           .update({ amount_spent: budget.amount_spent })
-          .eq('id', budget.id);
+          .eq('id', budget.id)
+          .eq('user_id', userID);
 
         if (error) {
           console.error('Error updating budgets:', error);
@@ -196,9 +201,10 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     setDeleting(true);
     try {
       const { error } = await supabase
-        .from(`raw_records_${userID.replace(/-/g, '')}`)
+        .from(`raw_records`)
         .delete()
-        .eq('id', transactionID);
+        .eq('id', transactionID)
+        .eq('user_id', userID);
 
       if (error) {
         console.error('Error deleting transaction', error);

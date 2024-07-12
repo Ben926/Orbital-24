@@ -8,6 +8,7 @@ import { useUser } from '@/contexts/UserContext';
 
 type Budget = {
     id: string;
+    user_id: string;
     budget_amount: number;
     amount_spent: number;
     start_date: string;
@@ -45,8 +46,9 @@ const BudgetPage = () => {
 
     const fetchBudgets = async () => {
         const { data, error } = await supabase
-            .from(`budget_plan_${userID.replace(/-/g, '')}`)
-            .select('*');
+            .from(`budget_plan`)
+            .select('*')
+            .eq('user_id', userID);
         if (error) {
             console.error(error);
         } else {
@@ -59,8 +61,9 @@ const BudgetPage = () => {
         const formattedStartDate = startDate.toISOString();
         const formattedEndDate = endDate.toISOString();
         const { data, error } = await supabase
-            .from(`raw_records_${userID.replace(/-/g, '')}`)
+            .from(`raw_records`)
             .select('*')
+            .eq('user_id', userID)
             .lt('amount', 0)
             .gte('timestamp', formattedStartDate)
             .lte('timestamp', formattedEndDate)
@@ -86,9 +89,10 @@ const BudgetPage = () => {
             endDate.setHours(23, 59, 59, 999);
             const amount_spent = await calculateAmountSpent(getSingaporeDate(startDate), getSingaporeDate(endDate));
             const { data, error } = await supabase
-                .from(`budget_plan_${userID.replace(/-/g, '')}`)
+                .from(`budget_plan`)
                 .insert([
                     {
+                        user_id: userID,
                         log: getSingaporeDate(),
                         budget_amount: parseFloat(budgetAmount),
                         amount_spent,
@@ -116,9 +120,10 @@ const BudgetPage = () => {
     const deleteBudget = async (budgetID: string) => {
         try {
             const { error } = await supabase
-                .from(`budget_plan_${userID.replace(/-/g, '')}`)
+                .from(`budget_plan`)
                 .delete()
-                .eq('id', budgetID);
+                .eq('id', budgetID)
+                .eq('user_id', userID);
 
             if (error) {
                 console.error('Error deleting budget', error);

@@ -80,8 +80,9 @@ const CreateTransactionForm = () => {
 
   const fetchGoals = async () => {
     const { data, error } = await supabase
-      .from(`spending_goals_${userID.replace(/-/g, '')}`)
-      .select('*');
+      .from(`spending_goals`)
+      .select('*')
+      .eq('user_id', userID);
     if (error) {
       console.error('Error fetching goals:', error);
       return [];
@@ -91,8 +92,9 @@ const CreateTransactionForm = () => {
 
   const fetchBudgets = async () => {
     const { data, error } = await supabase
-      .from(`budget_plan_${userID.replace(/-/g, '')}`)
-      .select('*');
+      .from(`budget_plan`)
+      .select('*')
+      .eq('user_id', userID);
     if (error) {
       console.error("Error fetching budgets:", error);
       return [];
@@ -108,9 +110,10 @@ const CreateTransactionForm = () => {
         goal.current_amount += amount;
 
         const { error } = await supabase
-          .from(`spending_goals_${userID.replace(/-/g, '')}`)
+          .from(`spending_goals`)
           .update({ current_amount: goal.current_amount })
-          .eq('id', goal.id);
+          .eq('id', goal.id)
+          .eq('user_id', userID);
 
         if (error) {
           console.error('Error updating goal amount:', error);
@@ -131,9 +134,10 @@ const CreateTransactionForm = () => {
         budget.amount_spent -= amount;
 
         const { error } = await supabase
-          .from(`budget_plan_${userID.replace(/-/g, '')}`)
+          .from(`budget_plan`)
           .update({ amount_spent: budget.amount_spent })
-          .eq('id', budget.id);
+          .eq('id', budget.id)
+          .eq('user_id', userID);
 
         if (error) {
           console.error('Error updating budgets:', error);
@@ -153,6 +157,7 @@ const CreateTransactionForm = () => {
       const transactionAmount = selectedCategory.outflow ? -parseFloat(amount) : parseFloat(amount);
 
       const transaction = {
+        user_id: userID,
         amount: transactionAmount,
         category: selectedCategoryName,
         log: getSingaporeDate(),
@@ -162,7 +167,7 @@ const CreateTransactionForm = () => {
       };
       try {
         const { error } = await supabase
-          .from(`raw_records_${userID.replace(/-/g, '')}`)
+          .from(`raw_records`)
           .insert([transaction])
           .select();
         if (error) {
@@ -302,9 +307,10 @@ const CreateTransactionForm = () => {
 
     try {
       const { error: error_raw_records_table } = await supabase
-        .from(`raw_records_${userID.replace(/-/g, '')}`)
+        .from(`raw_records`)
         .update({ category: newCategoryName })
         .eq('category', category.name)
+        .eq('user_id', userID)
 
       const { error: error_categories_table } = await supabase
         .from('categories')
@@ -327,9 +333,10 @@ const CreateTransactionForm = () => {
 
   const handleDeleteCategory = async (category: Category) => {
     let { data } = await supabase
-      .from(`raw_records_${userID.replace(/-/g, '')}`)
+      .from(`raw_records`)
       .select('*')
       .eq('category', category.name)
+      .eq('user_id', userID)
 
     const records_with_category = data || [];
 

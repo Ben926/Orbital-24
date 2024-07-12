@@ -8,6 +8,7 @@ import supabase from '@/supabase/supabase';
 
 type Goal = {
     id: string;
+    user_id: string;
     goal_name: string;
     target_amount: number;
     current_amount: number;
@@ -46,8 +47,9 @@ const GoalPage = () => {
 
     const fetchGoals = async () => {
         const { data, error } = await supabase
-            .from(`spending_goals_${userID.replace(/-/g, '')}`)
-            .select('*');
+            .from(`spending_goals`)
+            .select('*')
+            .eq('user_id', userID);
         if (error) {
             console.error(error);
         } else {
@@ -58,14 +60,16 @@ const GoalPage = () => {
     const calculateCurrentAmount = async (startDate: Date) => {
         const formattedStartDate = startDate.toISOString();
         const { data: incomeData, error: incomeError } = await supabase
-            .from(`raw_records_${userID.replace(/-/g, '')}`)
+            .from(`raw_records`)
             .select('amount')
+            .eq('user_id', userID)
             .gt('amount', 0)
             .gte('timestamp', formattedStartDate)
 
         const { data: expenseData, error: expenseError } = await supabase
-            .from(`raw_records_${userID.replace(/-/g, '')}`)
+            .from(`raw_records`)
             .select('amount')
+            .eq('user_id', userID)
             .lt('amount', 0)
             .gte('timestamp', formattedStartDate)
 
@@ -90,9 +94,10 @@ const GoalPage = () => {
         else if (newGoal.trim() && budgetAmount.trim()) {
             const calculatedCurrentAmount = await calculateCurrentAmount(getSingaporeDate(date));
             const { data, error } = await supabase
-                .from(`spending_goals_${userID.replace(/-/g, '')}`)
+                .from(`spending_goals`)
                 .insert([
                     {
+                        user_id: userID,
                         goal_name: newGoal,
                         log: getSingaporeDate(),
                         target_amount: parseFloat(budgetAmount),
@@ -120,9 +125,10 @@ const GoalPage = () => {
     const deleteGoal = async (goalID: string) => {
         try {
             const { error } = await supabase
-                .from(`spending_goals_${userID.replace(/-/g, '')}`)
+                .from(`spending_goals`)
                 .delete()
-                .eq('id', goalID);
+                .eq('id', goalID)
+                .eq('user_id', userID);
 
             if (error) {
                 console.error('Error deleting goal', error);
