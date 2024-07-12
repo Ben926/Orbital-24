@@ -6,7 +6,7 @@ export default function Layout() {
         <Tabs.Screen name = "Home" options = {{title: "Home", headerShown: false, tabBarIcon: ({ color, size }) => (
             <Entypo name="home" size={24} color="black" />
           )}}></Tabs.Screen>
-          <Tabs.Screen name = "AutomateTransactionPage" options = {{title: "Automate", headerShown: false, tabBarIcon: ({ color, size }) => (
+          <Tabs.Screen name = "AutomatePage" options = {{title: "Automate", headerShown: false, tabBarIcon: ({ color, size }) => (
             <FontAwesome5 name="robot" size={24} color="black" />
           )}}></Tabs.Screen>
         <Tabs.Screen name = "BudgetPage" options = {{title: "Budgets", headerShown: false, tabBarIcon: ({ color, size }) => (

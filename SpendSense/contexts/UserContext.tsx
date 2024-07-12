@@ -29,6 +29,18 @@ interface Category {
   color: string;
 };
 
+interface AutomatedTransaction {
+  id: string;
+  user_id: string;
+  amount: number;
+  description: string;
+  category: string;
+  color: string;
+  log: string;
+  frequency: string;
+  next_execution_date: string;
+};
+
 interface UserContextType {
   userID: string | null;
   setUserID: (id: string | null) => void;
@@ -40,6 +52,8 @@ interface UserContextType {
   setGoals: (goals: Goal[]) => void;
   categories: Category[];
   setCategories: (categories: Category[]) => void;
+  automatedTransactions: AutomatedTransaction[];
+  setAutomatedTransactions: (automatedTransactions: AutomatedTransaction[]) => void
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -49,7 +63,8 @@ export const UserProvider: React.FC = ({ children }) => {
   const [refreshUserData, setRefreshUserData] = useState<boolean>(false);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [categories, setCategories] = useState<Category[]>([])
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [automatedTransactions, setAutomatedTransactions] = useState<AutomatedTransaction[]>([]);
 
   return (
     <UserContext.Provider value={{
@@ -58,6 +73,7 @@ export const UserProvider: React.FC = ({ children }) => {
       budgets, setBudgets, 
       goals, setGoals,
       categories, setCategories,
+      automatedTransactions, setAutomatedTransactions,
     }}>
       {children}
     </UserContext.Provider>

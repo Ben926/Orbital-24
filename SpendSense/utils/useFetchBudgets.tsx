@@ -5,6 +5,23 @@ import { getSingaporeDate } from "@/utils/getSingaporeDate";
 
 export const useFetchBudgets = () => {
   const { userID, refreshUserData, setRefreshUserData, budgets, setBudgets } = useUser();
+
+  useEffect(() => {
+    const fetchBudgets = async () => {
+      const { data, error } = await supabase
+        .from('budget_plan')
+        .select('*')
+        .eq('user_id', userID);
+      if (error) {
+        console.error(error);
+      } else {
+        setBudgets(data);
+        setRefreshUserData(false);
+      }
+    };
+    fetchBudgets();
+  }, [refreshUserData]);
+
   const updateBudgets = async (amount: number, transactionDate: Date | string, deleting: boolean = false) => {
     if (amount > 0) {
       return;
@@ -45,22 +62,6 @@ export const useFetchBudgets = () => {
       }
     }
   };
-
-  useEffect(() => {
-    const fetchBudgets = async () => {
-      const { data, error } = await supabase
-        .from('budget_plan')
-        .select('*')
-        .eq('user_id', userID);
-      if (error) {
-        console.error(error);
-      } else {
-        setBudgets(data);
-        setRefreshUserData(false);
-      }
-    };
-    fetchBudgets();
-  }, [userID, refreshUserData]);
-
+  
   return { budgets, setBudgets, setRefreshUserData, updateBudgets };
 };

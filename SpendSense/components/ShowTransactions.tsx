@@ -9,6 +9,7 @@ import TransactionForm from "@/components/TransactionForm";
 import { useUser } from '../contexts/UserContext';
 import { useFetchBudgets } from '@/utils/useFetchBudgets';
 import { useFetchGoals } from '@/utils/useFetchGoals';
+import { useFetchAutomatedTransactions } from '@/utils/useFetchAutomatedTransactions';
 
 type Transaction = {
   id: string;
@@ -141,6 +142,12 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     }
   };
 
+  const filteredTransactions = selectedCategory
+    ? transactions.filter(transaction => transaction.category === selectedCategory)
+    : transactions;
+
+  const categories = Array.from(new Set(transactions.map(transaction => transaction.category)));
+
   const renderItem = ({ item }: { item: Transaction }) => (
 
     <View style={styles.transactionItem}>
@@ -169,13 +176,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     </View>
 
   );
-
-
-  const filteredTransactions = selectedCategory
-    ? transactions.filter(transaction => transaction.category === selectedCategory)
-    : transactions;
-
-  const categories = Array.from(new Set(transactions.map(transaction => transaction.category)));
 
   return (
     <View style={styles.transactionContainer}>

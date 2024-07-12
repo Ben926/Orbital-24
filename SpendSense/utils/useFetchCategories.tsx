@@ -20,7 +20,7 @@ export const useFetchCategories = () => {
             }
         };
         fetchCategories();
-    }, [userID, refreshUserData]);
+    }, [refreshUserData]);
 
     return { categories, setCategories, setRefreshUserData };
 };

@@ -2,7 +2,7 @@ import styles from "@/styles/styles.js";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AutomatedTransactions from "@/components/AutomatedTransactions";
 
-const ViewBudgets = () => {
+const AutomatePage= () => {
   return (
     <SafeAreaView style = {styles.indexContainer}>
       <AutomatedTransactions />
@@ -10,4 +10,4 @@ const ViewBudgets = () => {
   );
 };
 
-export default ViewBudgets;
+export default AutomatePage;

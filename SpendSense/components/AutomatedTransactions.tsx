@@ -1,45 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert, Pressable } from 'react-native';
+import React, { useState } from 'react';
+import { FlatList, Text, View, TouchableOpacity, Modal, Pressable } from 'react-native';
 import styles from '@/styles/styles';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import { useUser } from '@/contexts/UserContext';
 import AutomatedTransactionForm from './AutomatedTransactionForm';
-
-type AutomatedTransaction = {
-    id: string;
-    user_id: string;
-    amount: number;
-    description: string;
-    category: string;
-    color: string;
-    log: string;
-    frequency: string;
-    next_execution_date: string;
-};
+import { useFetchAutomatedTransactions } from '@/utils/useFetchAutomatedTransactions';
 
 const AutomatedTransactionsPage = () => {
-    const { userID, refreshUserData, setRefreshUserData } = useUser();
-    const [automatedTransactions, setAutomatedTransactions] = useState<AutomatedTransaction[]>([]);
+    const { userID, setRefreshUserData } = useUser();
+    const { automatedTransactions, updateAutomatedTransactions } = useFetchAutomatedTransactions();
     const [modalVisible, setModalVisible] = useState(false);
-
-    useEffect(() => {
-        fetchAutomatedTransactions();
-    }, [refreshUserData]);
-
-
-    const fetchAutomatedTransactions = async () => {
-        const { data, error } = await supabase
-            .from('automated_transactions')
-            .select('*')
-            .eq('user_id', userID);
-        if (error) {
-            console.error(error);
-        } else {
-            setAutomatedTransactions(data as AutomatedTransaction[]);
-            setRefreshUserData(false);
-        }
-    };
 
     const deleteAutomatedTransaction = async (transactionID: string) => {
         try {
@@ -52,9 +22,7 @@ const AutomatedTransactionsPage = () => {
             if (error) {
                 console.error('Error deleting transaction', error);
             } else {
-                setAutomatedTransactions((prevTransactions) =>
-                    prevTransactions.filter((transaction) => transaction.id !== transactionID)
-                );
+                setRefreshUserData(true);
             }
         } catch (error) {
             console.error('Error deleting transaction', error);
@@ -103,12 +71,12 @@ const AutomatedTransactionsPage = () => {
                 </View>
             )}
         />
-        <TouchableOpacity
-            style={styles.createTransactionButton}
-            onPress={() => setModalVisible(true)}
-        >
-            <Text style={styles.transparentButtonText}>Automate New Transaction</Text>
-        </TouchableOpacity>
+        <Pressable style={styles.button} onPress={updateAutomatedTransactions}>
+            <Text style={styles.buttonText}>Update Automations!</Text>
+        </Pressable>
+        <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
+            <Text style={styles.transparentButtonText}>Create New Automation</Text>
+        </Pressable>
 
         <Modal
             animationType="slide"
