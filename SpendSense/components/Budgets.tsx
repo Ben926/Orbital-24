@@ -1,34 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { FlatList, Text, View, TouchableOpacity, Modal, TextInput, Alert, } from 'react-native';
 import * as Progress from 'react-native-progress';
 import styles from '@/styles/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import { useUser } from '@/contexts/UserContext';
-
-type Budget = {
-    id: string;
-    user_id: string;
-    budget_amount: number;
-    amount_spent: number;
-    start_date: string;
-    end_date: string;
-    description: string;
-};
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import { useFetchBudgets } from '@/utils/useFetchBudgets';
 
 const BudgetPage = () => {
-    const { userID, refreshUserData, setRefreshUserData } = useUser();
-    const [budgets, setBudgets] = useState<Budget[]>([]);
+    const { userID } = useUser();
+    const { budgets, setRefreshUserData } = useFetchBudgets();
     const [modalVisible, setModalVisible] = useState(false);
     const [budgetAmount, setBudgetAmount] = useState('');
     const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [endDate, setEndDate] = useState<Date>(new Date());
-    const getSingaporeDate = (date = new Date()) => {
-        const offsetDate = new Date(date);
-        offsetDate.setHours(offsetDate.getHours() + 8);
-        return offsetDate;
-    };
     const onStartDateChange = (event: any, selectedDate?: Date) => {
         const currentStartDate = selectedDate || startDate;
         setStartDate(currentStartDate);
@@ -37,24 +24,6 @@ const BudgetPage = () => {
     const onEndDateChange = (event: any, selectedDate?: Date) => {
         const currentEndDate = selectedDate || endDate;
         setEndDate(currentEndDate);
-    };
-
-    useEffect(() => {
-        fetchBudgets();
-    }, [refreshUserData]);
-
-
-    const fetchBudgets = async () => {
-        const { data, error } = await supabase
-            .from(`budget_plan`)
-            .select('*')
-            .eq('user_id', userID);
-        if (error) {
-            console.error(error);
-        } else {
-            setBudgets(data as Budget[]);
-            setRefreshUserData(false);
-        }
     };
 
     const calculateAmountSpent = async (startDate: Date, endDate: Date) => {
@@ -103,12 +72,11 @@ const BudgetPage = () => {
                 ])
                 .select();
 
-
             if (error) {
                 console.error(error);
             } else {
                 Alert.alert('Success', 'Goal created successfully!');
-                setBudgets([...budgets, ...data]);
+                setRefreshUserData(true);
                 setBudgetAmount('');
                 setDescription('');
                 setModalVisible(false);
@@ -128,9 +96,7 @@ const BudgetPage = () => {
             if (error) {
                 console.error('Error deleting budget', error);
             } else {
-                setBudgets((prevBudgets) =>
-                    prevBudgets.filter((budget) => budget.id !== budgetID)
-                );
+                setRefreshUserData(true);
             }
         } catch (error) {
             console.error('Error deleting budget', error);
@@ -154,7 +120,7 @@ const BudgetPage = () => {
                     <View style={styles.transactionItem}>
                         <View style={styles.transactionContent}>
                             <View style={styles.transactionHeader}>
-                            <Text style={styles.transactionDescription}>{item.description}</Text>
+                                <Text style={styles.transactionDescription}>{item.description}</Text>
                                 <TouchableOpacity
                                     style={styles.deleteButton}
                                     onPress={() => deleteBudget(item.id)}
@@ -163,7 +129,7 @@ const BudgetPage = () => {
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.transactionAmount}>${item.amount_spent} / ${item.budget_amount}</Text>
+                            <Text style={styles.transactionAmount}>Amount Spent: ${item.amount_spent} / ${item.budget_amount}</Text>
                             <Text style={styles.transactionTimestamp}>
                                 {`${formatDate(item.start_date)} - ${formatDate(item.end_date)}`}
                             </Text>

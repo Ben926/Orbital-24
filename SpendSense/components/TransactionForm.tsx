@@ -4,24 +4,10 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
 import { useUser } from '@/contexts/UserContext';
-
-type Goal = {
-  id: string;
-  goal_name: string;
-  target_amount: number;
-  current_amount: number;
-  start_date: string;
-  description: string;
-};
-
-type Budget = {
-  id: string;
-  budget_amount: number;
-  amount_spent: number;
-  start_date: string;
-  end_date: string;
-  description: string;
-};
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import { useFetchBudgets } from '@/utils/useFetchBudgets';
+import { useFetchGoals } from '@/utils/useFetchGoals';
+import { useFetchCategories } from '@/utils/useFetchCategories';
 
 type Category = {
   id: string;
@@ -33,13 +19,10 @@ type Category = {
 };
 
 const CreateTransactionForm = () => {
-  const getSingaporeDate = (date = new Date()) => {
-    const offsetDate = new Date(date);
-    offsetDate.setHours(offsetDate.getHours() + 8);
-    return offsetDate;
-  };
-  const { userID, refreshUserData, setRefreshUserData } = useUser();
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { updateBudgets, setRefreshUserData } = useFetchBudgets();
+  const { updateGoalAmounts } = useFetchGoals();
+  const { userID } = useUser();
+  const { categories } = useFetchCategories();
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
@@ -59,91 +42,6 @@ const CreateTransactionForm = () => {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  };
-
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      let { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('user_id', userID);
-      if (error) {
-        console.error('Error fetching categories:', error);
-        setCategories([]);
-      } else if (data) {
-        setCategories(data as Category[]);
-      }
-    };
-    fetchCategories();
-  }, []);
-
-  const fetchGoals = async () => {
-    const { data, error } = await supabase
-      .from(`spending_goals`)
-      .select('*')
-      .eq('user_id', userID);
-    if (error) {
-      console.error('Error fetching goals:', error);
-      return [];
-    }
-    return data as Goal[];
-  };
-
-  const fetchBudgets = async () => {
-    const { data, error } = await supabase
-      .from(`budget_plan`)
-      .select('*')
-      .eq('user_id', userID);
-    if (error) {
-      console.error("Error fetching budgets:", error);
-      return [];
-    }
-    return data as Budget[];
-  };
-
-  const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
-    const goals = await fetchGoals();
-
-    for (const goal of goals) {
-      if (getSingaporeDate(new Date(goal.start_date)) <= transactionDate) {
-        goal.current_amount += amount;
-
-        const { error } = await supabase
-          .from(`spending_goals`)
-          .update({ current_amount: goal.current_amount })
-          .eq('id', goal.id)
-          .eq('user_id', userID);
-
-        if (error) {
-          console.error('Error updating goal amount:', error);
-        }
-      }
-    }
-  };
-
-  const updateBudgets = async (amount: number, transactionDate: Date) => {
-    if (amount > 0) {
-      return;
-    }
-    const budgets = await fetchBudgets();
-
-    for (const budget of budgets) {
-      if (getSingaporeDate(new Date(budget.start_date)) <= transactionDate
-        && getSingaporeDate(new Date(budget.end_date)) > transactionDate) {
-        budget.amount_spent -= amount;
-
-        const { error } = await supabase
-          .from(`budget_plan`)
-          .update({ amount_spent: budget.amount_spent })
-          .eq('id', budget.id)
-          .eq('user_id', userID);
-
-        if (error) {
-          console.error('Error updating budgets:', error);
-        }
-      }
-    }
   };
 
   const handleSubmit = async () => {
@@ -214,8 +112,6 @@ const CreateTransactionForm = () => {
     </TouchableOpacity>
   );
 
-
-
   const renderEditCategory = ({ item }: { item: Category }) => (
     <TouchableOpacity
       style={[styles.categorySquare, selectedCategoryName === item.name && styles.selectedCategory]}
@@ -263,14 +159,14 @@ const CreateTransactionForm = () => {
     }
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('categories')
         .insert([{ user_id: userID, name: newCategory, log: getSingaporeDate(), outflow: isNewCategoryOutflow, color: getRandomColor() }])
         .select();
       if (error) {
         console.error('Error adding category:', error);
       } else {
-        setCategories([...categories, ...data]);
+        setRefreshUserData(true);
         setNewCategory('');
         setModalVisible(false);
       }
@@ -317,11 +213,10 @@ const CreateTransactionForm = () => {
         .update({ name: newCategoryName })
         .eq('id', category.id);
 
-
       if (error_raw_records_table || error_categories_table) {
         console.error('Error updating category');
       } else {
-        setCategories(categories.map(cat => cat.id === category.id ? { ...cat, name: newCategoryName } : cat));
+        setRefreshUserData(true);
         setEditingCategory(null);
         setNewCategoryName('');
         Alert.alert('Category updated successfully');
@@ -353,7 +248,7 @@ const CreateTransactionForm = () => {
       if (error) {
         console.error('Error deleting category:', error);
       } else {
-        setCategories(categories.filter(cat => cat.id !== category.id));
+        setRefreshUserData(true);
         setEditingCategory(null);
         Alert.alert('Category deleted successfully');
       }

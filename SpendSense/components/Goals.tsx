@@ -5,31 +5,17 @@ import styles from '@/styles/styles';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useUser } from '@/contexts/UserContext';
 import supabase from '@/supabase/supabase';
-
-type Goal = {
-    id: string;
-    user_id: string;
-    goal_name: string;
-    target_amount: number;
-    current_amount: number;
-    start_date: string;
-    description: string;
-};
-
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import { useFetchGoals } from '@/utils/useFetchGoals';
 
 const GoalPage = () => {
-    const { userID, refreshUserData, setRefreshUserData } = useUser();
-    const [goals, setGoals] = useState<Goal[]>([]);
+    const { userID } = useUser();
+    const { goals, setRefreshUserData } = useFetchGoals();
     const [modalVisible, setModalVisible] = useState(false);
     const [newGoal, setNewGoal] = useState('');
     const [budgetAmount, setBudgetAmount] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState<Date>(new Date());
-    const getSingaporeDate = (date = new Date()) => {
-        const offsetDate = new Date(date);
-        offsetDate.setHours(offsetDate.getHours() + 8);
-        return offsetDate;
-    };
     const onDateChange = (event: any, selectedDate?: Date) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
@@ -40,23 +26,6 @@ const GoalPage = () => {
         setDate(currentTime);
     };
 
-    useEffect(() => {
-        fetchGoals();
-    }, [refreshUserData]);
-
-
-    const fetchGoals = async () => {
-        const { data, error } = await supabase
-            .from(`spending_goals`)
-            .select('*')
-            .eq('user_id', userID);
-        if (error) {
-            console.error(error);
-        } else {
-            setGoals(data as Goal[]);
-            setRefreshUserData(false);
-        }
-    };
     const calculateCurrentAmount = async (startDate: Date) => {
         const formattedStartDate = startDate.toISOString();
         const { data: incomeData, error: incomeError } = await supabase
@@ -113,7 +82,7 @@ const GoalPage = () => {
                 console.error(error);
             } else {
                 Alert.alert('Success', 'Goal created successfully!');
-                setGoals([...goals, ...data]);
+                setRefreshUserData(true);
                 setNewGoal('');
                 setBudgetAmount('');
                 setDescription('');
@@ -133,9 +102,7 @@ const GoalPage = () => {
             if (error) {
                 console.error('Error deleting goal', error);
             } else {
-                setGoals((prevGoals) =>
-                    prevGoals.filter((goal) => goal.id !== goalID)
-                );
+                setRefreshUserData(true);
             }
         } catch (error) {
             console.error('Error deleting transaction', error);

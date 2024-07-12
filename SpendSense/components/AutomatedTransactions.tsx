@@ -18,15 +18,6 @@ type AutomatedTransaction = {
     next_execution_date: string;
 };
 
-type Category = {
-    id: string;
-    user_id: string;
-    name: string;
-    log: string;
-    outflow: boolean;
-    color: string;
-};
-
 const AutomatedTransactionsPage = () => {
     const { userID, refreshUserData, setRefreshUserData } = useUser();
     const [automatedTransactions, setAutomatedTransactions] = useState<AutomatedTransaction[]>([]);

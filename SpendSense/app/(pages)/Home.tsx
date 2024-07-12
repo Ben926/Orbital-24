@@ -1,22 +1,16 @@
-import { Text, Pressable, View, Modal } from "react-native";
+import { Text, Pressable, View } from "react-native";
 import { useState } from "react";
 import styles from "@/styles/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ShowTransactions from "@/components/ShowTransactions";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
 
 const Home = () => {
   const [timePeriod, setTimePeriod] = useState('daily');
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
-
-  const getSingaporeDate = (date = new Date()) => {
-    const offsetDate = new Date(date);
-    offsetDate.setHours(offsetDate.getHours() + 8);
-    return offsetDate;
-  };
-
-  const handleTimePeriodChange = (period) => {
+  const handleTimePeriodChange = (period : string) => {
     setTimePeriod(period);
   };
 

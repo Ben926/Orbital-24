@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, Pressable } from 'react-native';
+import { View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, Pressable } from 'react-native';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
 import { useUser } from '@/contexts/UserContext';
-
-type Goal = {
-    id: string;
-    goal_name: string;
-    target_amount: number;
-    current_amount: number;
-    start_date: string;
-    description: string;
-};
-
-type Budget = {
-    id: string;
-    budget_amount: number;
-    amount_spent: number;
-    start_date: string;
-    end_date: string;
-    description: string;
-};
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import { useFetchCategories } from '@/utils/useFetchCategories';
 
 type Category = {
     id: string;
@@ -32,58 +16,13 @@ type Category = {
 };
 
 const AutomatedTransactionForm = () => {
-    const getSingaporeDate = (date = new Date()) => {
-        const offsetDate = new Date(date);
-        offsetDate.setHours(offsetDate.getHours() + 8);
-        return offsetDate;
-    };
-    const { userID, refreshUserData, setRefreshUserData } = useUser();
-    const [categories, setCategories] = useState<Category[]>([]);
+    const { userID, setRefreshUserData } = useUser();
+    const { categories } = useFetchCategories();
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
     const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [frequency, setFrequency] = useState<string>('Daily');
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            let { data, error } = await supabase
-                .from('categories')
-                .select('*')
-                .eq('user_id', userID);
-            if (error) {
-                console.error('Error fetching categories:', error);
-                setCategories([]);
-            } else if (data) {
-                setCategories(data as Category[]);
-            }
-        };
-        fetchCategories();
-    }, []);
-
-    const fetchGoals = async () => {
-        const { data, error } = await supabase
-            .from(`spending_goals`)
-            .select('*')
-            .eq('user_id', userID);
-        if (error) {
-            console.error('Error fetching goals:', error);
-            return [];
-        }
-        return data as Goal[];
-    };
-
-    const fetchBudgets = async () => {
-        const { data, error } = await supabase
-            .from(`budget_plan`)
-            .select('*')
-            .eq('user_id', userID);
-        if (error) {
-            console.error("Error fetching budgets:", error);
-            return [];
-        }
-        return data as Budget[];
-    };
 
     const getNextExecutionDate = () => {
         const today = new Date();

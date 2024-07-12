@@ -4,6 +4,7 @@ import supabase from "../supabase/supabase";
 import { router } from "expo-router";
 import styles from '../styles/styles';
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getSingaporeDate } from "@/utils/getSingaporeDate";
 
 const logoImg = require("../assets/images/spendsense-logo.png");
 
@@ -11,12 +12,6 @@ const SignUpForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const getSingaporeDate = (date = new Date()) => {
-    const offsetDate = new Date(date);
-    offsetDate.setHours(offsetDate.getHours() + 8);
-    return offsetDate;
-  };
-
   const handleSignup = async () => {
     if (password !== confirmPassword) {
       Alert.alert("Signup Error", "Passwords do not match");

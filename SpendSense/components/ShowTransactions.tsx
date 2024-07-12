@@ -7,24 +7,8 @@ import styles from '@/styles/styles';
 import PieChartComponent from '@/components/PieChart';
 import TransactionForm from "@/components/TransactionForm";
 import { useUser } from '../contexts/UserContext';
-
-type Goal = {
-  id: string;
-  goal_name: string;
-  target_amount: number;
-  current_amount: number;
-  start_date: string;
-  description: string;
-};
-
-type Budget = {
-  id: string;
-  budget_amount: number;
-  amount_spent: number;
-  start_date: string;
-  end_date: string;
-  description: string;
-};
+import { useFetchBudgets } from '@/utils/useFetchBudgets';
+import { useFetchGoals } from '@/utils/useFetchGoals';
 
 type Transaction = {
   id: string;
@@ -53,7 +37,7 @@ type PieChartData = {
 
 const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const { userID, refreshUserData, setRefreshUserData } = useUser();
+  const { userID, refreshUserData } = useUser();
   const [loading, setLoading] = useState<boolean>(true);
   const [deleting, setDeleting] = useState<boolean>(false);
   const [outflowPieChartData, setOutflowPieChartData] = useState<PieChartData[]>([]);
@@ -63,34 +47,35 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
   const [isFilterModalVisible, setIsFilterModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [hideChart, setHideChart] = useState(!showChart);
+  const { updateBudgets, setRefreshUserData } = useFetchBudgets();
+  const { updateGoalAmounts } = useFetchGoals();
 
   useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from(`raw_records`)
+          .select('*')
+          .eq('user_id', userID)
+          .gte('timestamp', startDate)
+          .lte('timestamp', endDate)
+          .order('timestamp', { ascending: false });
+
+        if (error) {
+          console.error('Error fetching transaction history', error);
+        } else {
+          setTransactions(data || []);
+        }
+      } finally {
+        setLoading(false);
+        setRefreshUserData(false);
+      }
+    };
     fetchTransactions();
   }, [startDate, endDate, refreshUserData]);
 
   useEffect(() => { fetchPieChartData() }, [transactions]);
-
-  const fetchTransactions = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from(`raw_records`)
-        .select('*')
-        .eq('user_id', userID)
-        .gte('timestamp', startDate)
-        .lte('timestamp', endDate)
-        .order('timestamp', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching transaction history', error);
-      } else {
-        setTransactions(data || []);
-      }
-    } finally {
-      setLoading(false);
-      setRefreshUserData(false);
-    }
-  };
 
   const fetchPieChartData = async () => {
     const inflowTransactions = transactions.filter((transaction) => transaction.amount >= 0);
@@ -129,74 +114,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     }, []);
     return formattedData;
   };
-
-  const fetchGoals = async () => {
-    const { data, error } = await supabase
-      .from(`spending_goals`)
-      .select('*')
-      .eq('user_id', userID);
-    if (error) {
-      console.error('Error fetching goals:', error);
-      return [];
-    }
-    return data as Goal[];
-  };
-
-  const fetchBudgets = async () => {
-    const { data, error } = await supabase
-      .from(`budget_plan`)
-      .select('*')
-      .eq('user_id', userID);
-    if (error) {
-      console.error("Error fetching budgets:", error);
-      return [];
-    }
-    return data as Budget[];
-  };
-
-  const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
-    const goals = await fetchGoals();
-
-    for (const goal of goals) {
-      if (new Date(goal.start_date) <= transactionDate) {
-        goal.current_amount -= amount;
-
-        const { error } = await supabase
-          .from(`spending_goals`)
-          .update({ current_amount: goal.current_amount })
-          .eq('id', goal.id)
-          .eq('user_id', userID);
-
-        if (error) {
-          console.error('Error updating goal amount:', error);
-        }
-      }
-    }
-  };
-
-  const updateBudgets = async (amount: number, transactionDate: Date) => {
-    if (amount > 0) {
-      return;
-    }
-    const budgets = await fetchBudgets();
-
-    for (const budget of budgets) {
-      if (new Date(budget.start_date) <= transactionDate && new Date(budget.end_date) > transactionDate) {
-        budget.amount_spent += amount;
-
-        const { error } = await supabase
-          .from(`budget_plan`)
-          .update({ amount_spent: budget.amount_spent })
-          .eq('id', budget.id)
-          .eq('user_id', userID);
-
-        if (error) {
-          console.error('Error updating budgets:', error);
-        }
-      }
-    }
-  };
-
+  
   const deleteTransaction = async (transactionID: string, transaction_amount: number, transaction_timestamp: string) => {
     setDeleting(true);
     try {
@@ -212,8 +130,8 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         setTransactions((prevTransactions) =>
           prevTransactions.filter((transaction) => transaction.id !== transactionID)
         );
-        await updateGoalAmounts(transaction_amount, new Date(transaction_timestamp));
-        await updateBudgets(transaction_amount, new Date(transaction_timestamp));
+        await updateGoalAmounts(transaction_amount, new Date(transaction_timestamp), true);
+        await updateBudgets(transaction_amount, new Date(transaction_timestamp), true);
       }
     } catch (error) {
       console.error('Error deleting transaction', error);
@@ -267,11 +185,11 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         <>
           {transactions.length !== 0 && (
             <>
-            {showChart && <View style={styles.topRightButtonContainer}>
-              <Pressable style={styles.viewAllButton} onPress={() => setHideChart(!hideChart)}>
-                <Text style={styles.viewAllButtonText}>{hideChart ? "Show Pie Chart" : "Hide Pie Chart"}</Text>
-              </Pressable>
-            </View>}
+              {showChart && <View style={styles.topRightButtonContainer}>
+                <Pressable style={styles.viewAllButton} onPress={() => setHideChart(!hideChart)}>
+                  <Text style={styles.viewAllButtonText}>{hideChart ? "Show Pie Chart" : "Hide Pie Chart"}</Text>
+                </Pressable>
+              </View>}
               {!hideChart && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
                 {<Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>}
               </TouchableOpacity>}
@@ -325,7 +243,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.transactionFormContainer}>
-          <TransactionForm/>
+          <TransactionForm />
           <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); }}>
             <Text style={styles.transparentButtonText}>Close</Text>
           </Pressable>
