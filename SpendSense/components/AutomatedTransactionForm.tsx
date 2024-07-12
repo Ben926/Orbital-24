@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, StyleSheet, Dimensions, Pressable } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Modal, View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, Pressable } from 'react-native';
 import supabase from '@/supabase/supabase';
 import styles from '../styles/styles.js';
 import { useUser } from '@/contexts/UserContext';
@@ -44,7 +43,7 @@ const AutomatedTransactionForm = () => {
     const [selectedCategoryName, setSelectedCategoryName] = useState<string>('');
     const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
-    const [frequency, setFrequency] = useState<string>('');
+    const [frequency, setFrequency] = useState<string>('Daily');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -86,49 +85,34 @@ const AutomatedTransactionForm = () => {
         return data as Budget[];
     };
 
-    const updateGoalAmounts = async (amount: number, transactionDate: Date) => {
-        const goals = await fetchGoals();
-
-        for (const goal of goals) {
-            if (getSingaporeDate(new Date(goal.start_date)) <= transactionDate) {
-                goal.current_amount += amount;
-
-                const { error } = await supabase
-                    .from(`spending_goals`)
-                    .update({ current_amount: goal.current_amount })
-                    .eq('id', goal.id)
-                    .eq('user_id', userID);
-
-                if (error) {
-                    console.error('Error updating goal amount:', error);
+    const getNextExecutionDate = () => {
+        const today = new Date();
+        let nextExecutionDate = new Date(today);
+        switch (frequency) {
+            case 'Daily':
+                nextExecutionDate.setDate(today.getDate() + 1);
+                nextExecutionDate.setHours(0, 0, 0, 0);
+                nextExecutionDate = getSingaporeDate(nextExecutionDate);
+                break;
+            case 'Weekly':
+                const daysUntilNextWeek = 7 - today.getDay(); // Days remaining in the current week
+                nextExecutionDate.setDate(today.getDate() + daysUntilNextWeek); // Move to the next week's start
+                nextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
+                nextExecutionDate = getSingaporeDate(nextExecutionDate);
+                break;
+            case 'Monthly':
+                if (today.getMonth() === 11) { // If it's December
+                    nextExecutionDate = new Date(today.getFullYear() + 1, 0, 1); // Set to January 1st of the next year
+                } else {
+                    nextExecutionDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Set to the 1st of the next month
                 }
-            }
+                nextExecutionDate.setHours(0, 0, 0, 0);
+                nextExecutionDate = getSingaporeDate(nextExecutionDate);
+                break;
         }
+        return nextExecutionDate;
     };
 
-    const updateBudgets = async (amount: number, transactionDate: Date) => {
-        if (amount > 0) {
-            return;
-        }
-        const budgets = await fetchBudgets();
-
-        for (const budget of budgets) {
-            if (getSingaporeDate(new Date(budget.start_date)) <= transactionDate
-                && getSingaporeDate(new Date(budget.end_date)) > transactionDate) {
-                budget.amount_spent -= amount;
-
-                const { error } = await supabase
-                    .from(`budget_plan`)
-                    .update({ amount_spent: budget.amount_spent })
-                    .eq('id', budget.id)
-                    .eq('user_id', userID);
-
-                if (error) {
-                    console.error('Error updating budgets:', error);
-                }
-            }
-        }
-    };
 
     const handleSubmit = async () => {
         if (!amount || !selectedCategoryName || !selectedCategory) {
@@ -139,27 +123,25 @@ const AutomatedTransactionForm = () => {
             Alert.alert('Amount cannot be zero!')
         } else {
             const transactionAmount = selectedCategory.outflow ? -parseFloat(amount) : parseFloat(amount);
-
-            const transaction = {
+            const automatedTransaction = {
                 user_id: userID,
                 amount: transactionAmount,
                 category: selectedCategoryName,
                 log: getSingaporeDate(),
                 description,
                 frequency,
+                next_execution_date: getNextExecutionDate(),
                 color: selectedCategory.color
             };
             try {
                 const { error } = await supabase
-                    .from(`raw_records`)
-                    .insert([transaction])
+                    .from(`automated_transactions`)
+                    .insert([automatedTransaction])
                     .select();
                 if (error) {
-                    console.error('Error creating transaction:', error);
+                    console.error('Error creating automation:', error);
                 } else {
-                    Alert.alert('Success', 'Transaction created successfully!');
-                    await updateGoalAmounts(transactionAmount, transaction.timestamp);
-                    await updateBudgets(transactionAmount, transaction.timestamp);
+                    Alert.alert('Success', 'Automation created successfully!');
                     setRefreshUserData(true);
                     setSelectedCategory(null);
                     setSelectedCategoryName('');
@@ -179,7 +161,7 @@ const AutomatedTransactionForm = () => {
         >
             <Text style={styles.categoryText}>{item.name}</Text>
             {selectedCategoryName === item.name && (
-                <Text style={styles.signText}>
+                <Text>
                     {item.outflow ? "-" : '+'}
                 </Text>
             )}
@@ -189,7 +171,7 @@ const AutomatedTransactionForm = () => {
 
     return (
         <View style={styles.formContainer}>
-            <Text style={styles.welcomeText}>Create Automated Transaction</Text>
+            <Text style={styles.welcomeText}>Automate New Transaction</Text>
             <View style={styles.categoryGridContainer}>
                 <FlatList
                     data={[...categories]}
@@ -217,6 +199,17 @@ const AutomatedTransactionForm = () => {
                 value={description}
                 onChangeText={setDescription}
             />
+            <View style={styles.buttonGroup}>
+                <Pressable style={[styles.timeUnselectButton, frequency == 'Daily' && styles.timeButton]} onPress={() => setFrequency('Daily')}>
+                    <Text style={styles.buttonText}>Daily</Text>
+                </Pressable>
+                <Pressable style={[styles.timeUnselectButton, frequency == 'Weekly' && styles.timeButton]} onPress={() => setFrequency('Weekly')}>
+                    <Text style={styles.buttonText}>Weekly</Text>
+                </Pressable>
+                <Pressable style={[styles.timeUnselectButton, frequency == 'Monthly' && styles.timeButton]} onPress={() => setFrequency('Monthly')}>
+                    <Text style={styles.buttonText}>Monthly</Text>
+                </Pressable>
+            </View>
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Automate!</Text>
             </TouchableOpacity>

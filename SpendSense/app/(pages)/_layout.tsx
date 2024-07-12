@@ -1,10 +1,13 @@
 import { Tabs } from "expo-router";
-import { Feather, Entypo } from '@expo/vector-icons';
+import { Feather, Entypo, FontAwesome5 } from '@expo/vector-icons';
 
 export default function Layout() {
     return <Tabs>
         <Tabs.Screen name = "Home" options = {{title: "Home", headerShown: false, tabBarIcon: ({ color, size }) => (
             <Entypo name="home" size={24} color="black" />
+          )}}></Tabs.Screen>
+          <Tabs.Screen name = "AutomateTransactionPage" options = {{title: "Automate", headerShown: false, tabBarIcon: ({ color, size }) => (
+            <FontAwesome5 name="robot" size={24} color="black" />
           )}}></Tabs.Screen>
         <Tabs.Screen name = "BudgetPage" options = {{title: "Budgets", headerShown: false, tabBarIcon: ({ color, size }) => (
             <Feather name="dollar-sign" size={24} color="black" />

@@ -29,7 +29,7 @@ type Category = {
 
 const AutomatedTransactionsPage = () => {
     const { userID, refreshUserData, setRefreshUserData } = useUser();
-    const [transactions, setTransactions] = useState<AutomatedTransaction[]>([]);
+    const [automatedTransactions, setAutomatedTransactions] = useState<AutomatedTransaction[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
@@ -45,7 +45,7 @@ const AutomatedTransactionsPage = () => {
         if (error) {
             console.error(error);
         } else {
-            setTransactions(data as AutomatedTransaction[]);
+            setAutomatedTransactions(data as AutomatedTransaction[]);
             setRefreshUserData(false);
         }
     };
@@ -61,7 +61,7 @@ const AutomatedTransactionsPage = () => {
             if (error) {
                 console.error('Error deleting transaction', error);
             } else {
-                setTransactions((prevTransactions) =>
+                setAutomatedTransactions((prevTransactions) =>
                     prevTransactions.filter((transaction) => transaction.id !== transactionID)
                 );
             }
@@ -82,10 +82,11 @@ const AutomatedTransactionsPage = () => {
 
     return (<View style={styles.transactionContainer}>
         <FlatList
-            data={transactions}
+            data={automatedTransactions}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
                 <View style={styles.transactionItem}>
+                    <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
                     <View style={styles.transactionContent}>
                         <View style={styles.transactionHeader}>
                             <Text style={styles.transactionDescription}>{item.description}</Text>
@@ -96,14 +97,17 @@ const AutomatedTransactionsPage = () => {
                                 <Text style={styles.deleteButtonText}>x</Text>
                             </TouchableOpacity>
                         </View>
+                        <View style={styles.transactionDetails}>
+                            <Text style={styles.transactionCategory}>{item.category}</Text>
 
-                        <Text style={styles.transactionAmount}>${item.amount}</Text>
+
+                        </View>
                         <Text style={styles.transactionTimestamp}>
-                            Next Execution: {formatDate(item.next_execution_date)}
+                            Next Transaction Date: {formatDate(item.next_execution_date)} ({item.frequency})
                         </Text>
-                        <Text style={styles.transactionTimestamp}>
-                            Frequency: {item.frequency}
-                        </Text>
+                        <View style={styles.transactionFooter}>
+                            <Text style={styles.transactionAmount}>{item.amount < 0 ? `-$${Math.abs(item.amount)}` : `+$${item.amount}`}</Text>
+                        </View>
                     </View>
                 </View>
             )}
@@ -112,22 +116,22 @@ const AutomatedTransactionsPage = () => {
             style={styles.createTransactionButton}
             onPress={() => setModalVisible(true)}
         >
-            <Text style={styles.transparentButtonText}>Add New Automated Transaction</Text>
+            <Text style={styles.transparentButtonText}>Automate New Transaction</Text>
         </TouchableOpacity>
 
         <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.transactionFormContainer}>
-          <AutomatedTransactionForm />
-          <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); }}>
-            <Text style={styles.transparentButtonText}>Close</Text>
-          </Pressable>
-        </View>
-      </Modal>
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+        >
+            <View style={styles.transactionFormContainer}>
+                <AutomatedTransactionForm />
+                <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); }}>
+                    <Text style={styles.transparentButtonText}>Close</Text>
+                </Pressable>
+            </View>
+        </Modal>
     </View>
     );
 };

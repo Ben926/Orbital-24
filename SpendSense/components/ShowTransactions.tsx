@@ -165,7 +165,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
           .from(`spending_goals`)
           .update({ current_amount: goal.current_amount })
           .eq('id', goal.id)
-          .eq('userID', userID);
+          .eq('user_id', userID);
 
         if (error) {
           console.error('Error updating goal amount:', error);
