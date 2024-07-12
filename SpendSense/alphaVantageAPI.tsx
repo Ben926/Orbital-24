@@ -19,3 +19,25 @@ export const getStockPrice = async (symbol) => {
     return null;
   }
 };
+export const getStockHistory = async (symbol) => {
+  try {
+    const response = await axios.get(BASE_URL, {
+      params: {
+        function: 'TIME_SERIES_DAILY',
+        symbol: symbol,
+        apikey: API_KEY,
+      },
+    });
+    const timeSeries = response.data['Time Series (Daily)'];
+    return Object.keys(timeSeries).slice(0, 30).map(date => ({
+      date,
+      open: timeSeries[date]['1. open'],
+      high: timeSeries[date]['2. high'],
+      low: timeSeries[date]['3. low'],
+      close: timeSeries[date]['4. close'],
+    }));
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};

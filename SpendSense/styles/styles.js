@@ -419,6 +419,11 @@ const styles = StyleSheet.create({
     color: '49D469',
     fontFamily: 'Figtree'
   },
+  suggestionItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: 'gray',
+  },
 });
 
 export default styles;
