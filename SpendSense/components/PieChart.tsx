@@ -16,13 +16,12 @@ const PieChartComponent = ({ data }) => {
     <View>
       <PieChart
         data={data}
-        width={screenWidth*(3/4)}
-        height={165}
+        width={screenWidth*(1)}
+        height={160}
         chartConfig={chartConfig}
         accessor={"amount"}
         backgroundColor={"white"}
-        paddingLeft={"15"}
-
+        paddingLeft='-30'
         absolute
       />
     </View>

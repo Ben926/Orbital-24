@@ -207,7 +207,7 @@ const CreateTransactionForm = () => {
     >
       <Text style={styles.categoryText}>{item.name}</Text>
       {selectedCategoryName === item.name && (
-        <Text style={styles.signText}>
+        <Text>
           {item.outflow ? "-" : '+'}
         </Text>
       )}
@@ -393,7 +393,7 @@ const CreateTransactionForm = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Description"
+        placeholder="Description (optional)"
         placeholderTextColor="grey"
         textAlign="center"
         value={description}

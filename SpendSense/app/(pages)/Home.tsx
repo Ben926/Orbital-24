@@ -96,21 +96,6 @@ const Home = () => {
       }
       return endDate.toISOString();
     }
-  
-
-  /*const getEndDate = () => {
-    if (timePeriod == "manual") {
-      let endDate = manualEndDate;
-      endDate.setHours(23, 59, 59, 999);
-      endDate = getSingaporeDate(endDate);
-      return endDate.toISOString();
-    } else {
-      let today = new Date();
-      today.setHours(23, 59, 59, 999);
-      today = getSingaporeDate(today);
-      return today.toISOString();
-    }
-  };*/
 
   return (
     <SafeAreaView style={styles.indexContainer}>

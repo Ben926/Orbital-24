@@ -314,9 +314,9 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         </View>
       </Modal>
 
-      <Pressable style={styles.createTransactionButton} onPress={() => setModalVisible(true)}>
+      {showChart && <Pressable style={styles.createTransactionButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.transparentButtonText}>Create New Transaction</Text>
-      </Pressable>
+      </Pressable>}
 
       <Modal
         animationType="slide"
@@ -325,7 +325,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.transactionFormContainer}>
-          <TransactionForm userID={userID} items={transactions} setItems={setTransactions} />
+          <TransactionForm/>
           <Pressable style={styles.transparentButton} onPress={() => { setModalVisible(false); }}>
             <Text style={styles.transparentButtonText}>Close</Text>
           </Pressable>

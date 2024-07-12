@@ -211,7 +211,7 @@ const GoalPage = () => {
                         <Text style={styles.welcomeText}>Add a New Goal</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Enter your goal"
+                            placeholder="Goal"
                             placeholderTextColor="grey"
                             textAlign="center"
                             value={newGoal}
@@ -219,7 +219,7 @@ const GoalPage = () => {
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="Enter description"
+                            placeholder="Description (optional)"
                             placeholderTextColor="grey"
                             textAlign="center"
                             value={description}
@@ -227,7 +227,7 @@ const GoalPage = () => {
                         />
                         <TextInput
                             style={styles.input}
-                            placeholder="Enter target amount"
+                            placeholder="Target Amount"
                             keyboardType="numeric"
                             placeholderTextColor="grey"
                             textAlign="center"
