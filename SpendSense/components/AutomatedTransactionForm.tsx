@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, Alert, Platform, Text, TouchableOpacity, FlatList, Pressable } from 'react-native';
 import supabase from '@/supabase/supabase';
-import styles from '../styles/styles.js';
+import styles from '../styles/styles';
 import { useUser } from '@/contexts/UserContext';
 import { getSingaporeDate } from "@/utils/getSingaporeDate";
 import { useFetchCategories } from '@/utils/useFetchCategories';
+import ModalSelector from 'react-native-modal-selector';
 
 type Category = {
     id: string;
@@ -23,6 +24,22 @@ const AutomatedTransactionForm = () => {
     const [amount, setAmount] = useState<string>('');
     const [description, setDescription] = useState<string>('');
     const [frequency, setFrequency] = useState<string>('Daily');
+    const [dayOfWeek, setDayOfWeek] = useState<string>('Monday');
+    const [dayOfMonth, setDayOfMonth] = useState<number>(1);
+    const daysOfMonth = Array.from({ length: 28 }, (_, i) => ({ key: i + 1, label: `${i + 1}` }));
+    const daysOfWeek = [
+        { key: 1, label: 'Monday' },
+        { key: 2, label: 'Tuesday' },
+        { key: 3, label: 'Wednesday' },
+        { key: 4, label: 'Thursday' },
+        { key: 5, label: 'Friday' },
+        { key: 6, label: 'Saturday' },
+        { key: 0, label: 'Sunday' },
+    ];
+    const getKeyFromLabel = (label: string) => {
+        const day = daysOfWeek.find((day) => day.label === label);
+        return day ? day.key : 0;
+    };
 
     const getNextExecutionDate = () => {
         const today = new Date();
@@ -34,16 +51,20 @@ const AutomatedTransactionForm = () => {
                 nextExecutionDate = getSingaporeDate(nextExecutionDate);
                 break;
             case 'Weekly':
-                const daysUntilNextWeek = 7 - today.getDay() + 1; // Days remaining in the current week
-                nextExecutionDate.setDate(today.getDate() + daysUntilNextWeek); // Move to the next week's start
+                const currentDay = today.getDay();
+                let daysUntilNextExecution = getKeyFromLabel(dayOfWeek) - currentDay;
+                if (daysUntilNextExecution <= 0) {
+                    daysUntilNextExecution += 7; // Ensure the next execution day is in the future
+                }
+                nextExecutionDate.setDate(today.getDate() + daysUntilNextExecution);
                 nextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
                 nextExecutionDate = getSingaporeDate(nextExecutionDate);
                 break;
             case 'Monthly':
-                if (today.getMonth() === 11) { // If it's December
-                    nextExecutionDate = new Date(today.getFullYear() + 1, 0, 1); // Set to January 1st of the next year
+                if (dayOfMonth <= today.getDate()) {
+                    nextExecutionDate = new Date(today.getFullYear(), today.getMonth() + 1, dayOfMonth); // Set to the ${dayOfMonth} of the next month
                 } else {
-                    nextExecutionDate = new Date(today.getFullYear(), today.getMonth() + 1, 1); // Set to the 1st of the next month
+                    nextExecutionDate = new Date(today.getFullYear(), today.getMonth(), dayOfMonth);
                 }
                 nextExecutionDate.setHours(0, 0, 0, 0);
                 nextExecutionDate = getSingaporeDate(nextExecutionDate);
@@ -65,6 +86,7 @@ const AutomatedTransactionForm = () => {
             const automatedTransaction = {
                 user_id: userID,
                 amount: transactionAmount,
+                day: frequency == "Daily" ? -1 : (frequency == "Weekly" ? getKeyFromLabel(dayOfWeek) : dayOfMonth),
                 category: selectedCategoryName,
                 log: getSingaporeDate(),
                 description,
@@ -149,6 +171,40 @@ const AutomatedTransactionForm = () => {
                     <Text style={styles.buttonText}>Monthly</Text>
                 </Pressable>
             </View>
+            {frequency === 'Weekly' && (
+                <>
+                    <ModalSelector
+                        data={daysOfWeek}
+                        initValue={dayOfWeek}
+                        onChange={(option) => setDayOfWeek(option.label)}
+                        style={styles.monthButton}
+                    >
+                        <TextInput
+                            style={styles.buttonText}
+                            editable={false}
+                            placeholder="Select Day"
+                            value={dayOfWeek}
+                        />
+                    </ModalSelector>
+                </>
+            )}
+            {frequency === 'Monthly' && (
+                <>
+                    <ModalSelector
+                        data={daysOfMonth}
+                        initValue={`${dayOfMonth}`}
+                        onChange={(option) => setDayOfMonth(option.key)}
+                        style={styles.monthButton}
+                    >
+                        <TextInput
+                            style={styles.buttonText}
+                            editable={false}
+                            placeholder="Select Day"
+                            value={`${dayOfMonth}`}
+                        />
+                    </ModalSelector>
+                </>
+            )}
             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                 <Text style={styles.buttonText}>Automate!</Text>
             </TouchableOpacity>

@@ -39,6 +39,7 @@ interface AutomatedTransaction {
   log: string;
   frequency: string;
   next_execution_date: string;
+  day: number;
 };
 
 interface UserContextType {

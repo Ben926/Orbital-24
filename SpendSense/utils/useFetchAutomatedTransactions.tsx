@@ -28,35 +28,24 @@ export const useFetchAutomatedTransactions = () => {
 
   const updateAutomatedTransactions = async () => {
     for (const automatedTransaction of automatedTransactions) {
-      let oldNextExecutionDate = new Date(automatedTransaction.next_execution_date);
-      while (oldNextExecutionDate <= new Date()) {
-        let newNextExecutionDate = new Date();
-        let timestamp = new Date();
+      let nextExecutionDate = new Date(automatedTransaction.next_execution_date);
+      let timestamp = new Date(automatedTransaction.next_execution_date);
+      while (nextExecutionDate <= new Date()) {
         switch (automatedTransaction.frequency) {
           case 'Daily':
-            timestamp.setDate(oldNextExecutionDate.getDate());
-            timestamp.setHours(0, 0, 0, 0);
-            newNextExecutionDate.setDate(oldNextExecutionDate.getDate() + 1);
-            newNextExecutionDate.setHours(0, 0, 0, 0);
-            oldNextExecutionDate = newNextExecutionDate;
-            newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
+            timestamp.setMonth(nextExecutionDate.getMonth());
+            timestamp.setDate(nextExecutionDate.getDate());
+            nextExecutionDate.setDate(nextExecutionDate.getDate() + 1);
             break;
           case 'Weekly':
-            timestamp.setDate(oldNextExecutionDate.getDate());
-            timestamp.setHours(0, 0, 0, 0);
-            const daysUntilNextWeek = 7 - oldNextExecutionDate.getDay(); // Days remaining in the current week
-            newNextExecutionDate.setDate(oldNextExecutionDate.getDate() + daysUntilNextWeek + 1); // Move to the next week's start
-            newNextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
-            oldNextExecutionDate = newNextExecutionDate;
-            newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
+            timestamp.setMonth(nextExecutionDate.getMonth());
+            timestamp.setDate(nextExecutionDate.getDate());
+            nextExecutionDate.setDate(nextExecutionDate.getDate() + 7);
             break;
           case 'Monthly':
-            timestamp.setDate(oldNextExecutionDate.getDate());
-            timestamp.setHours(0, 0, 0, 0);
-            newNextExecutionDate.setMonth(oldNextExecutionDate.getMonth() + 1); // Increment month by 1
-            newNextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
-            oldNextExecutionDate = newNextExecutionDate;
-            newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
+            timestamp.setMonth(nextExecutionDate.getMonth());
+            timestamp.setDate(nextExecutionDate.getDate());
+            nextExecutionDate.setMonth(nextExecutionDate.getMonth() + 1);
             break;
 
         }
@@ -88,7 +77,7 @@ export const useFetchAutomatedTransactions = () => {
         try {
           const { error } = await supabase
             .from('automated_transactions')
-            .update({ next_execution_date: newNextExecutionDate })
+            .update({ next_execution_date: getSingaporeDate(nextExecutionDate) })
             .eq('id', automatedTransaction.id);
           if (error) {
             console.error(`Error updating automated transaction ${automatedTransaction.id}:`, error);
