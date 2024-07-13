@@ -26,6 +26,12 @@ const styles = StyleSheet.create({
   logoContainer: {
     alignItems: 'center',
   },
+  stockPriceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
   loginPasswordContainer: {
     position: 'relative',
     width: '100%',
@@ -424,6 +430,29 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
   },
+  stockChart: {
+    marginVertical: 10,
+    borderRadius: 16,
+    alignSelf: 'center'
+  },
+  stockStatsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  stockStatsText : {
+    fontSize: 16,
+    fontWeight: '600',
+    fontFamily: 'Figtree'
+  },
+  suggestionsList: {
+    maxHeight: 200
+  },
+  searchBarContainer: {
+    flex: 1,
+    backgroundColor: "white"
+  }
 });
 
 export default styles;

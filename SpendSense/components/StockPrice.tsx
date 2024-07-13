@@ -35,6 +35,11 @@ const StockPrice = ({ symbol }) => {
     fetchStockPrice();
   }, [symbol]);
 
+  const formatMonth = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('default', { month: 'short' });
+  };
+
   if (loading) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
@@ -43,11 +48,13 @@ const StockPrice = ({ symbol }) => {
 
   return (
     <View style={styles.indexContainer}>
-      <Text style={styles.stockSymbol}>{symbol}</Text>
-      <Text style={styles.stockPrice}>${price}</Text>
+      <View style={styles.stockPriceContainer}>
+        <Text style={styles.stockSymbol}>{symbol}</Text>
+        <Text style={styles.stockPrice}>${price}</Text>
+      </View>
       <LineChart
       data={{
-        labels: history.map((entry, index) => (index % 5 === 0 ? entry.date : '')),
+        labels: history.map((entry, index) => (index % 5 === 0 ? formatMonth(entry.date) : '')),
         datasets: [
           {
             data: history.map(entry => entry.close),
@@ -57,18 +64,26 @@ const StockPrice = ({ symbol }) => {
       width={320}
         height={220}
         chartConfig={{
-          backgroundColor: '#e26a00',
-          backgroundGradientFrom: '#fb8c00',
-          backgroundGradientTo: '#ffa726',
+          backgroundColor: '#ffffff',
+          backgroundGradientFrom: '#ffffff',
+          backgroundGradientTo: '#ffffff',
           decimalPlaces: 2,
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          color: (opacity = 1) => `rgba(0, 123, 255, ${opacity})`,
+          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16,
+          },
+          propsForDots: {
+            r: '0'
+          },
         }}
+        style={styles.stockChart}
       />
-      <View>
-        <Text>High: {Math.max(...history.map(entry => entry.high))}</Text>
-        <Text>Low: {Math.min(...history.map(entry => entry.low))}</Text>
-        <Text>Open: {history[0]?.open}</Text>
-        <Text>Close: {history[history.length - 1]?.close}</Text>
+      <View style={styles.stockStatsContainer}>
+        <Text style={styles.stockStatsText}>High: {Math.max(...history.map(entry => entry.high))}</Text>
+        <Text style={styles.stockStatsText}>Low: {Math.min(...history.map(entry => entry.low))}</Text>
+        <Text style={styles.stockStatsText}>Open: {history[0]?.open}</Text>
+        <Text style={styles.stockStatsText}>Close: {history[history.length - 1]?.close}</Text>
       </View>
     </View>
   );

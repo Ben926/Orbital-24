@@ -1,56 +1,65 @@
 import React, { useState } from 'react';
-import { SafeAreaView, View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { SafeAreaView, View, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, InteractionManagerStatic } from 'react-native';
 import StockPrice from '@/components/StockPrice';
 import styles from "@/styles/styles";
-import axios from 'axios';
+import supabase from "@/supabase/supabase";
+
+type Stock = {
+  id: number,
+  symbol: string,
+  name: string
+}
 const Stocks = () => {
-  const [selectedStock, setSelectedStock] = useState(null);
-  const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  const [selectedStock, setSelectedStock] = useState<string | null>(null);
+  const [query, setQuery] = useState<string>('');
+  const [suggestions, setSuggestions] = useState<Stock[]>([]);
 
   const fetchSuggestions = async (text) => {
     setQuery(text);
     if (text.length >= 1) {
       try {
-        const response = await axios.get('https://www.alphavantage.co/query', {
-          params: {
-            function: 'SYMBOL_SEARCH',
-            keywords: text,
-            apikey: 'CIIZCPW1EW8N6JVG',
-          },
-        });
-        console.log('API Response:', response.data.bestMatches);
-        setSuggestions(response.data.bestMatches);
+        let { data, error } = await supabase
+          .from('stocks')
+          .select('id, symbol, name')
+          .ilike('symbol', `%${text}%`); 
+  
+        if (error) {
+          console.error('Error fetching suggestions:', error);
+        } else {
+          setSuggestions(data ?? []);
+        }
       } catch (error) {
-        console.error(error);
+        console.error('Unexpected error:', error);
       }
     } else {
       setSuggestions([]);
     }
   };
 
-  const handleStockSelection = (symbol) => {
+  const handleStockSelection = (symbol: string) => {
     setSelectedStock(symbol);
     setQuery('');
     setSuggestions([]);
   };
   return (
     
-    <SafeAreaView style={styles.indexContainer}>
+    <SafeAreaView style={styles.searchBarContainer}>
       <TextInput
         style={styles.input}
         placeholder="Search for a stock symbol"
+        placeholderTextColor="black"
         value={query}
         onChangeText={fetchSuggestions}
       />
       <FlatList
         data={suggestions}
-        keyExtractor={(item) => item['1. symbol']}
+        keyExtractor={(item) => item.symbol}
         renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleStockSelection(item['1. symbol'])}>
-            <Text style={styles.suggestionItem}>{item['1. symbol']}</Text>
+          <TouchableOpacity onPress={() => handleStockSelection(item.symbol)}>
+            <Text style={styles.suggestionItem}>{item.symbol}</Text>
           </TouchableOpacity>
         )}
+        style={styles.suggestionsList}
       />
       {selectedStock && <StockPrice symbol={selectedStock} />}
     </SafeAreaView>
