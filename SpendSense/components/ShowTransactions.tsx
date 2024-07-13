@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Modal, Pressable, ActivityIndicator } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import supabase from "../supabase/supabase";
 import { router } from "expo-router";
@@ -9,7 +9,6 @@ import TransactionForm from "@/components/TransactionForm";
 import { useUser } from '../contexts/UserContext';
 import { useFetchBudgets } from '@/utils/useFetchBudgets';
 import { useFetchGoals } from '@/utils/useFetchGoals';
-import { useFetchAutomatedTransactions } from '@/utils/useFetchAutomatedTransactions';
 
 type Transaction = {
   id: string;
@@ -128,9 +127,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
       if (error) {
         console.error('Error deleting transaction', error);
       } else {
-        setTransactions((prevTransactions) =>
-          prevTransactions.filter((transaction) => transaction.id !== transactionID)
-        );
         await updateGoalAmounts(transaction_amount, new Date(transaction_timestamp), true);
         await updateBudgets(transaction_amount, new Date(transaction_timestamp), true);
       }
@@ -180,7 +176,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
   return (
     <View style={styles.transactionContainer}>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#008000" />
       ) : (
         <>
           {transactions.length !== 0 && (
@@ -232,7 +228,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
         </View>
       </Modal>
 
-      {showChart && <Pressable style={styles.createTransactionButton} onPress={() => setModalVisible(true)}>
+      {!loading && showChart && <Pressable style={styles.createTransactionButton} onPress={() => setModalVisible(true)}>
         <Text style={styles.transparentButtonText}>Create New Transaction</Text>
       </Pressable>}
 

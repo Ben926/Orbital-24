@@ -34,7 +34,7 @@ const AutomatedTransactionForm = () => {
                 nextExecutionDate = getSingaporeDate(nextExecutionDate);
                 break;
             case 'Weekly':
-                const daysUntilNextWeek = 7 - today.getDay(); // Days remaining in the current week
+                const daysUntilNextWeek = 7 - today.getDay() + 1; // Days remaining in the current week
                 nextExecutionDate.setDate(today.getDate() + daysUntilNextWeek); // Move to the next week's start
                 nextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
                 nextExecutionDate = getSingaporeDate(nextExecutionDate);

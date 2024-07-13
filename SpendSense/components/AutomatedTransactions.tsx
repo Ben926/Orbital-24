@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, Text, View, TouchableOpacity, Modal, Pressable } from 'react-native';
+import { FlatList, Text, View, TouchableOpacity, Modal, Pressable, ActivityIndicator } from 'react-native';
 import styles from '@/styles/styles';
 import supabase from '@/supabase/supabase';
 import { useUser } from '@/contexts/UserContext';
@@ -10,6 +10,18 @@ const AutomatedTransactionsPage = () => {
     const { userID, setRefreshUserData } = useUser();
     const { automatedTransactions, updateAutomatedTransactions } = useFetchAutomatedTransactions();
     const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleUpdateAutomatedTransactions = async () => {
+        setLoading(true);
+        try {
+            await updateAutomatedTransactions();
+        } catch (error) {
+            console.error('Error updating automated transactions', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const deleteAutomatedTransaction = async (transactionID: string) => {
         try {
@@ -71,9 +83,12 @@ const AutomatedTransactionsPage = () => {
                 </View>
             )}
         />
-        <Pressable style={styles.button} onPress={updateAutomatedTransactions}>
+        <TouchableOpacity style={styles.button} onPress={handleUpdateAutomatedTransactions} disabled={loading}>
             <Text style={styles.buttonText}>Update Automations!</Text>
-        </Pressable>
+        </TouchableOpacity>
+        {loading && <View>
+            <ActivityIndicator size="large" color="#008000" />
+        </View>}
         <Pressable style={styles.transparentButton} onPress={() => setModalVisible(true)}>
             <Text style={styles.transparentButtonText}>Create New Automation</Text>
         </Pressable>

@@ -27,38 +27,38 @@ export const useFetchAutomatedTransactions = () => {
   }, [refreshUserData]);
 
   const updateAutomatedTransactions = async () => {
-    let sum = 1;
-    const newTransactions = [];
     for (const automatedTransaction of automatedTransactions) {
       let oldNextExecutionDate = new Date(automatedTransaction.next_execution_date);
       while (oldNextExecutionDate <= new Date()) {
-        console.log(sum);
-        sum += 1;
         let newNextExecutionDate = new Date();
+        let timestamp = new Date();
         switch (automatedTransaction.frequency) {
           case 'Daily':
+            timestamp.setDate(oldNextExecutionDate.getDate());
+            timestamp.setHours(0, 0, 0, 0);
             newNextExecutionDate.setDate(oldNextExecutionDate.getDate() + 1);
             newNextExecutionDate.setHours(0, 0, 0, 0);
             oldNextExecutionDate = newNextExecutionDate;
             newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
             break;
           case 'Weekly':
+            timestamp.setDate(oldNextExecutionDate.getDate());
+            timestamp.setHours(0, 0, 0, 0);
             const daysUntilNextWeek = 7 - oldNextExecutionDate.getDay(); // Days remaining in the current week
-            newNextExecutionDate.setDate(oldNextExecutionDate.getDate() + daysUntilNextWeek); // Move to the next week's start
+            newNextExecutionDate.setDate(oldNextExecutionDate.getDate() + daysUntilNextWeek + 1); // Move to the next week's start
             newNextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
             oldNextExecutionDate = newNextExecutionDate;
             newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
             break;
           case 'Monthly':
-            if (oldNextExecutionDate.getMonth() === 11) { // If it's December
-              newNextExecutionDate = new Date(oldNextExecutionDate.getFullYear() + 1, 0, 1); // Set to January 1st of the next year
-            } else {
-              newNextExecutionDate = new Date(oldNextExecutionDate.getFullYear(), oldNextExecutionDate.getMonth() + 1, 1); // Set to the 1st of the next month
-            }
-            newNextExecutionDate.setHours(0, 0, 0, 0);
+            timestamp.setDate(oldNextExecutionDate.getDate());
+            timestamp.setHours(0, 0, 0, 0);
+            newNextExecutionDate.setMonth(oldNextExecutionDate.getMonth() + 1); // Increment month by 1
+            newNextExecutionDate.setHours(0, 0, 0, 0); // Set to start of the day
             oldNextExecutionDate = newNextExecutionDate;
             newNextExecutionDate = getSingaporeDate(newNextExecutionDate);
             break;
+
         }
 
         const newTransaction = {
@@ -67,7 +67,7 @@ export const useFetchAutomatedTransactions = () => {
           category: automatedTransaction.category,
           log: getSingaporeDate(),
           description: automatedTransaction.description,
-          timestamp: oldNextExecutionDate,
+          timestamp: getSingaporeDate(timestamp),
           color: automatedTransaction.color
         };
         try {
@@ -93,7 +93,7 @@ export const useFetchAutomatedTransactions = () => {
           if (error) {
             console.error(`Error updating automated transaction ${automatedTransaction.id}:`, error);
           } else {
-            
+
           }
         } catch (err) {
           console.error('Unexpected error updating automated transaction:', err);

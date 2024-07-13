@@ -33,7 +33,7 @@ const Home = () => {
         startDate = getSingaporeDate(startDate);
         break;
       case 'weekly':
-        const firstDayOfWeek = today.getDate() - today.getDay();
+        const firstDayOfWeek = today.getDate() - today.getDay() + 1;
         startDate = new Date(today.setDate(firstDayOfWeek));
         startDate.setHours(0, 0, 0, 0);
         startDate = getSingaporeDate(startDate);
@@ -72,7 +72,7 @@ const Home = () => {
         endDate = new Date();
         const day = endDate.getDay(); 
         const diff = 7 - day; 
-        endDate.setDate(endDate.getDate() + diff); 
+        endDate.setDate(endDate.getDate() + diff + 1); 
         endDate.setHours(23, 59, 59, 999);
         endDate = getSingaporeDate(endDate);
         break;
