@@ -10,6 +10,7 @@ type StockHistoryEntry = {
   high: number;
   low: number;
   close: number;
+  volume: number;
 };
 
 const StockPrice = ({ symbol }) => {
@@ -47,14 +48,14 @@ const StockPrice = ({ symbol }) => {
   
 
   return (
-    <View style={styles.indexContainer}>
+    <View style={styles.transactionContainer}>
       <View style={styles.stockPriceContainer}>
         <Text style={styles.stockSymbol}>{symbol}</Text>
         <Text style={styles.stockPrice}>${price}</Text>
       </View>
       <LineChart
       data={{
-        labels: history.map((entry, index) => (index % 5 === 0 ? formatMonth(entry.date) : '')),
+        labels: history.map((entry, index) => (index % 30 === 0 ? formatMonth(entry.date) : '')),
         datasets: [
           {
             data: history.map(entry => entry.close),
@@ -80,10 +81,13 @@ const StockPrice = ({ symbol }) => {
         style={styles.stockChart}
       />
       <View style={styles.stockStatsContainer}>
-        <Text style={styles.stockStatsText}>High: {Math.max(...history.map(entry => entry.high))}</Text>
-        <Text style={styles.stockStatsText}>Low: {Math.min(...history.map(entry => entry.low))}</Text>
-        <Text style={styles.stockStatsText}>Open: {history[0]?.open}</Text>
-        <Text style={styles.stockStatsText}>Close: {history[history.length - 1]?.close}</Text>
+        <Text style={styles.stockStatsText}>Open: {history[history.length - 1]?.open}</Text>
+        <Text style={styles.stockStatsText}>High Today: {history[history.length - 1].high}</Text>
+        <Text style={styles.stockStatsText}>Low Today: {history[history.length - 1].low}</Text>
+        <Text style={styles.stockStatsText}>1Y High: {Math.max(...history.map(entry => entry.high))}</Text>
+        <Text style={styles.stockStatsText}>1Y Low: {Math.min(...history.map(entry => entry.low))}</Text>
+        <Text style={styles.stockStatsText}>Avg Volume: {history.reduce((sum, entry) => sum + entry.volume, 0)}</Text>
+        
       </View>
     </View>
   );

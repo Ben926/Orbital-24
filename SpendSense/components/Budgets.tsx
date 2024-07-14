@@ -8,6 +8,7 @@ import { useUser } from '@/contexts/UserContext';
 import { getSingaporeDate } from "@/utils/getSingaporeDate";
 import { useFetchBudgets } from '@/utils/useFetchBudgets';
 
+
 const BudgetPage = () => {
     const { userID } = useUser();
     const { budgets, setRefreshUserData } = useFetchBudgets();
@@ -16,6 +17,7 @@ const BudgetPage = () => {
     const [description, setDescription] = useState('');
     const [startDate, setStartDate] = useState<Date>(new Date());
     const [endDate, setEndDate] = useState<Date>(new Date());
+    const [descriptionVisible, setDescriptionVisible] = useState(false);
     const onStartDateChange = (event: any, selectedDate?: Date) => {
         const currentStartDate = selectedDate || startDate;
         setStartDate(currentStartDate);

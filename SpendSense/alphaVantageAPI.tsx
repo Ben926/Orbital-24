@@ -29,12 +29,13 @@ export const getStockHistory = async (symbol) => {
       },
     });
     const timeSeries = response.data['Time Series (Daily)'];
-    return Object.keys(timeSeries).slice(0, 30).map(date => ({
+    return Object.keys(timeSeries).slice(0, 365).map(date => ({
       date,
       open: timeSeries[date]['1. open'],
       high: timeSeries[date]['2. high'],
       low: timeSeries[date]['3. low'],
       close: timeSeries[date]['4. close'],
+      volume: parseInt(timeSeries[date]['5. volume'])
     }));
   } catch (error) {
     console.error(error);

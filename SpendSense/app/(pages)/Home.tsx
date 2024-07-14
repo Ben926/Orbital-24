@@ -1,15 +1,19 @@
-import { Text, Pressable, View } from "react-native";
+import { Text, Pressable, View, Modal } from "react-native";
 import { useState } from "react";
 import styles from "@/styles/styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ShowTransactions from "@/components/ShowTransactions";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import {DescriptionText} from "@/components/DescriptionText"
 
 const Home = () => {
   const [timePeriod, setTimePeriod] = useState('daily');
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
+  const [descriptionVisible, setDescriptionVisible] = useState(false);
+  const header = 'Expense Tracking';
+  const description = 'Choose your desired date range and see all your transactions within the range.\nCreate your own categories and group them accordingly!';
   const handleTimePeriodChange = (period : string) => {
     setTimePeriod(period);
   };
@@ -120,6 +124,9 @@ const Home = () => {
           onChange={onManualEndDateChange} />}
       </View>
       <ShowTransactions startDate={getStartDate()} endDate={getEndDate()} />
+      <DescriptionText header={header} description={description}/>
+
+
     </SafeAreaView>
   );
 }

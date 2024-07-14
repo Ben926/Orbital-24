@@ -48,10 +48,17 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontFamily: 'Figtree-Bold',
-    paddingBottom: 30,
+    paddingBottom: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     fontSize: 24,
+  },
+  descriptionText: {
+    fontFamily: 'Figtree',
+    paddingBottom: 10,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
   },
   text2: {
     fontFamily: "Figtree",
@@ -451,10 +458,10 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   stockStatsContainer: {
-    flexDirection: 'row',
     justifyContent: 'space-around',
     paddingHorizontal: 20,
     paddingVertical: 10,
+    alignItems: 'center'
   },
   stockStatsText : {
     fontSize: 16,
@@ -467,7 +474,26 @@ const styles = StyleSheet.create({
   searchBarContainer: {
     flex: 1,
     backgroundColor: "white"
-  }
+  },
+  questionButton: {
+    position: 'absolute',
+    bottom: -5,
+    right: 20,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    borderWidth: 2,
+    borderColor: 'black',
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  questionButtonText: {
+    color: 'black',
+    fontSize: 14,
+    
+  },
+
 });
 
 export default styles;
