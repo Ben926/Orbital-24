@@ -5,7 +5,7 @@ import { DescriptionText } from "@/components/DescriptionText";
 
 const ViewGoals = () => {
   const header = "Purchase Goals"
-  const description = "Dreaming of buying something special? Keep track of how much you have saved toward your desired purchase!"
+  const description = "Dreaming of buying something special? Keep track of how much you have saved toward your desired purchase!\n\nThe amount in each goal card is the amount of money saved in that time period, or the total outflows subtracted from the total inflows."
   return (
     <SafeAreaView style = {styles.indexContainer}>
       <Goals />

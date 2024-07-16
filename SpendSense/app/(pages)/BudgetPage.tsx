@@ -6,7 +6,7 @@ import { DescriptionText } from "@/components/DescriptionText";
 
 const ViewBudgets = () => {
   const header = 'Budgeting'
-  const description = "Set a personal budget to control your spending! Keep your expenses in check and ensure you don't exceed your desired limit within a chosen time period."
+  const description = "Set a personal budget to control your spending!\n\n Keep your expenses in check and ensure you don't exceed your desired limit within a chosen time period.\n\n The amount in each budget card is calculated by simply adding the total amount of outflows in the date range."
   return (
     <SafeAreaView style = {styles.indexContainer}>
       <Budgets />

@@ -13,7 +13,7 @@ const Home = () => {
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
   const [descriptionVisible, setDescriptionVisible] = useState(false);
   const header = 'Expense Tracking';
-  const description = 'Choose your desired date range and see all your transactions within the range.\nCreate your own categories and group them accordingly!';
+  const description = 'Choose your desired date range and see all your transactions within the range.\n\nCreate your own categories and group them accordingly!';
   const handleTimePeriodChange = (period : string) => {
     setTimePeriod(period);
   };
