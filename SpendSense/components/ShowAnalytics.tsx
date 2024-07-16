@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, Pressable, ActivityIndicator } 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import supabase from "@/supabase/supabase";
 import { getSingaporeDate } from "@/utils/getSingaporeDate";
+import { useUser } from '../contexts/UserContext';
 import styles from "@/styles/styles";
 
 type Transaction = {
@@ -16,15 +17,24 @@ type Transaction = {
 };
 
 const ShowAnalytics = () => {
+  const { userID, refreshUserData, setRefreshUserData } = useUser();
   const [timePeriod, setTimePeriod] = useState('daily');
   const [manualStartDate, setManualStartDate] = useState<Date>(new Date());
   const [manualEndDate, setManualEndDate] = useState<Date>(new Date());
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [prevMonthTransactions, setPrevMonthTransactions] = useState<Transaction[]>([]);
   const [currMonthTransactions, setCurrMonthTransactions] = useState<Transaction[]>([]);
+  const [prevMonthOutflow, setPrevMonthOutflow] = useState<Transaction[]>([]);
+  const [currMonthOutflow, setCurrMonthOutflow] = useState<Transaction[]>([]);
+  const [prevMonthInflow, setPrevMonthInflow] = useState<Transaction[]>([]);
+  const [currMonthInflow, setCurrMonthInflow] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [comparisonText, setComparisonText] = useState<string>('');
+  const [comparisonOutText, setComparisonOutText] = useState<string>('');
+  const [comparisonInText, setComparisonInText] = useState<string>('');
   const [comparisonColor, setComparisonColor] = useState<string>('');
+  const [outColor, setOutColor] = useState<string>('');
+  const [inColor, setInColor] = useState<string>('');
 
   const handleTimePeriodChange = (period: string) => {
     setTimePeriod(period);
@@ -134,16 +144,35 @@ const ShowAnalytics = () => {
   useEffect(() => {
     const currentTotal = currMonthTransactions.reduce((total, transaction) => total + transaction.amount, 0);
     const prevTotal = prevMonthTransactions.reduce((total, transaction) => total + transaction.amount, 0);
+    const currOutflows = currMonthOutflow.reduce((total, transaction) => total + transaction.amount, 0);
+    const currInflows = currMonthInflow.reduce((total, transaction) => total + transaction.amount, 0);
+    const prevOutflows = prevMonthOutflow.reduce((total, transaction) => total + transaction.amount, 0);
+    const prevInflows = prevMonthInflow.reduce((total, transaction) => total + transaction.amount, 0);
 
-    const diff = currentTotal - prevTotal;
-    const absDiff = Math.abs(diff);
-    const comparisonText = diff < 0
-      ? `You have spent $${absDiff.toFixed(2)} more this month so far compared to last month.`
-      : `You have spent $${absDiff.toFixed(2)} less this month so far compared to last month.`;
+    const diffTotal = currentTotal - prevTotal;
+    const diffOutflows = currOutflows - prevOutflows;
+    const diffInflows = currInflows - prevInflows;
+    const absDiffTotal = Math.abs(diffTotal);
+    const absDiffOutflows = Math.abs(diffOutflows);
+    const absDiffInflows = Math.abs(diffInflows);
+    const savedText = diffTotal < 0
+        ? `You have saved $${absDiffTotal.toFixed(2)} less this month so far compared to last month.`
+        : `You have saved $${absDiffTotal.toFixed(2)} more this month so far compared to last month.`;
+    const OutText = diffOutflows <= 0
+        ? `You have spent $${absDiffOutflows.toFixed(2)} more this month so far compared to last month.`
+        : `You have spent $${absDiffOutflows.toFixed(2)} less this month so far compared to last month.`;
+    const InText = diffInflows < 0
+        ? `You have earned $${absDiffInflows.toFixed(2)} less this month so far compared to last month.`
+        : `You have earned $${absDiffInflows.toFixed(2)} more this month so far compared to last month.`;
 
-    setComparisonText(comparisonText);
-    setComparisonColor(diff < 0 ? 'red' : 'green');
-  }, [transactions, prevMonthTransactions]);
+    setComparisonText(savedText);
+    setComparisonOutText(OutText);
+    setComparisonInText(InText);
+    setComparisonColor(diffTotal < 0 ? 'red' : 'green');
+    setOutColor(diffOutflows < 0 ? 'red' : 'green');
+    setInColor(diffInflows < 0 ? 'red' : 'green');
+  }, [currMonthTransactions, prevMonthTransactions]);
+  
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -152,6 +181,7 @@ const ShowAnalytics = () => {
         const { data, error } = await supabase
           .from('raw_records')
           .select('*')
+          .eq('user_id', userID)
           .gte('timestamp', getStartDate())
           .lte('timestamp', getEndDate());
 
@@ -160,14 +190,20 @@ const ShowAnalytics = () => {
         const { data: prevData, error: prevError } = await supabase
             .from('raw_records')
             .select('*')
+            .eq('user_id', userID)
             .gte('timestamp', prevStart)
             .lte('timestamp', prevEnd);
 
         const { data: currData, error: currError } = await supabase
             .from('raw_records')
             .select('*')
+            .eq('user_id', userID)
             .gte('timestamp', currStart)
             .lte('timestamp', currEnd);
+        let prevOutflows = prevData?.filter((transaction) => transaction.amount < 0)
+        let prevInflows = prevData?.filter((transaction) => transaction.amount >= 0)
+        let currOutflows = currData?.filter((transaction) => transaction.amount < 0)
+        let currInflows = currData?.filter((transaction) => transaction.amount >= 0)
 
         if (error) {
           console.error('Error fetching transactions', error);
@@ -175,14 +211,19 @@ const ShowAnalytics = () => {
           setTransactions(data || []);
           setPrevMonthTransactions(prevData || []);
           setCurrMonthTransactions(currData || []);
+          setPrevMonthOutflow(prevOutflows|| []);
+          setCurrMonthOutflow(currOutflows || []);
+          setPrevMonthInflow(prevInflows|| []);
+          setCurrMonthInflow(currInflows || []);
         }
       } finally {
         setLoading(false);
+        setRefreshUserData(false);
       }
     };
 
     fetchTransactions();
-  }, [timePeriod, manualStartDate, manualEndDate]);
+  }, [timePeriod, manualStartDate, manualEndDate, refreshUserData]);
 
   const renderCategorySpending = ({ item }: { item: { category: string, amount: number, color: string } }) => (
     <View style={styles.analyticsItem}>
@@ -251,6 +292,8 @@ const ShowAnalytics = () => {
         )}
       </View>
       <Text style={{ color: comparisonColor, textAlign: 'center', marginVertical: 10 }}>{comparisonText}</Text>
+      <Text style={{ color: outColor, textAlign: 'center', marginVertical: 10 }}>{comparisonOutText}</Text>
+      <Text style={{ color: inColor, textAlign: 'center', marginVertical: 10 }}>{comparisonInText}</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
