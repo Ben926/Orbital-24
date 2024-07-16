@@ -171,7 +171,7 @@ const ShowAnalytics = () => {
     setComparisonColor(diffTotal < 0 ? 'red' : 'green');
     setOutColor(diffOutflows < 0 ? 'red' : 'green');
     setInColor(diffInflows < 0 ? 'red' : 'green');
-  }, [currMonthTransactions, prevMonthTransactions]);
+  }, [currMonthTransactions, prevMonthTransactions, currMonthOutflow, currMonthInflow, prevMonthOutflow, prevMonthInflow]);
   
 
   useEffect(() => {
