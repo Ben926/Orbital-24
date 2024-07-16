@@ -493,6 +493,36 @@ const styles = StyleSheet.create({
     fontSize: 14,
     
   },
+  descriptionContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 10,
+  },
+  analyticsDescription: {
+    fontSize: 28,
+    color: '#555',
+    fontFamily: 'Figtree',
+    flex: 1,
+  },
+  analyticsAmount: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+    fontFamily: 'Figtree'
+  },
+  analyticsItem: {
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+    alignItems: 'center', 
+  },
 
 });
 

@@ -82,7 +82,7 @@ const Home = () => {
         break;
       case 'monthly':
         endDate = new Date();
-        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0); // Last day of the current month
+        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0); 
         endDate.setHours(23, 59, 59, 999);
         endDate = getSingaporeDate(endDate);
         break;

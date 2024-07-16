@@ -6,7 +6,7 @@ import styles from "@/styles/styles";
 export const DescriptionText = ({header, description}) => {
     const [descriptionVisible, setDescriptionVisible] = useState(false);
     return (
-    <View>
+    <View style={styles.descriptionContainer}>
         <Pressable
             style={styles.questionButton}
             onPress={() => setDescriptionVisible(true)}
