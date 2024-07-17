@@ -107,7 +107,8 @@ const BudgetPage = () => {
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
         const options: Intl.DateTimeFormatOptions = {
-            month: 'short',
+            year: 'numeric',
+            month: 'long',
             day: 'numeric',
         };
         return date.toLocaleDateString('en-US', options);
@@ -131,7 +132,7 @@ const BudgetPage = () => {
                                 </TouchableOpacity>
                             </View>
 
-                            <Text style={styles.transactionAmount}>Amount Spent: ${item.amount_spent} / ${item.budget_amount}</Text>
+                            <Text style={styles.transactionAmount}>${item.amount_spent} out of ${item.budget_amount} spent!</Text>
                             <Text style={styles.transactionTimestamp}>
                                 {`${formatDate(item.start_date)} - ${formatDate(item.end_date)}`}
                             </Text>

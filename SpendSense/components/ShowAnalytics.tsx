@@ -125,10 +125,10 @@ const ShowAnalytics = () => {
     let currMonthEnd = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
     currMonthEnd.setHours(23, 59, 59, 999);
     return {
-        startDate: getSingaporeDate(currMonthStart).toISOString(),
-        endDate: getSingaporeDate(currMonthEnd).toISOString(),
-      };
-    
+      startDate: getSingaporeDate(currMonthStart).toISOString(),
+      endDate: getSingaporeDate(currMonthEnd).toISOString(),
+    };
+
   }
 
   const getPrevMonthDates = () => {
@@ -141,7 +141,7 @@ const ShowAnalytics = () => {
       endDate: getSingaporeDate(prevMonthEnd).toISOString(),
     };
   };
-  
+
   useEffect(() => {
     const currentTotal = currMonthTransactions.reduce((total, transaction) => total + transaction.amount, 0);
     const prevTotal = prevMonthTransactions.reduce((total, transaction) => total + transaction.amount, 0);
@@ -157,14 +157,14 @@ const ShowAnalytics = () => {
     const absDiffOutflows = Math.abs(diffOutflows);
     const absDiffInflows = Math.abs(diffInflows);
     const savedText = diffTotal < 0
-        ? `You have saved $${absDiffTotal.toFixed(2)} less this month so far compared to last month. (Net)`
-        : `You have saved $${absDiffTotal.toFixed(2)} more this month so far compared to last month. (Net)`;
+      ? `You have saved $${absDiffTotal.toFixed(2)} less this month so far compared to last month. (Net Total)`
+      : `You have saved $${absDiffTotal.toFixed(2)} more this month so far compared to last month. (Net Total)`;
     const OutText = diffOutflows <= 0
-        ? `You have spent $${absDiffOutflows.toFixed(2)} more this month so far compared to last month. (Outflows)`
-        : `You have spent $${absDiffOutflows.toFixed(2)} less this month so far compared to last month.(Outflows)`;
+      ? `You have spent $${absDiffOutflows.toFixed(2)} more this month so far compared to last month. (Outflows)`
+      : `You have spent $${absDiffOutflows.toFixed(2)} less this month so far compared to last month.(Outflows)`;
     const InText = diffInflows < 0
-        ? `You have earned $${absDiffInflows.toFixed(2)} less this month so far compared to last month. (Inflows)`
-        : `You have earned $${absDiffInflows.toFixed(2)} more this month so far compared to last month. (Inflows)`;
+      ? `You have earned $${absDiffInflows.toFixed(2)} less this month so far compared to last month. (Inflows)`
+      : `You have earned $${absDiffInflows.toFixed(2)} more this month so far compared to last month. (Inflows)`;
 
     setComparisonText(savedText);
     setComparisonOutText(OutText);
@@ -173,7 +173,7 @@ const ShowAnalytics = () => {
     setOutColor(diffOutflows < 0 ? 'red' : 'green');
     setInColor(diffInflows < 0 ? 'red' : 'green');
   }, [currMonthTransactions, prevMonthTransactions, currMonthOutflow, currMonthInflow, prevMonthOutflow, prevMonthInflow]);
-  
+
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -189,18 +189,18 @@ const ShowAnalytics = () => {
         const { startDate: prevStart, endDate: prevEnd } = getPrevMonthDates();
         const { startDate: currStart, endDate: currEnd } = getCurrMonthDates();
         const { data: prevData, error: prevError } = await supabase
-            .from('raw_records')
-            .select('*')
-            .eq('user_id', userID)
-            .gte('timestamp', prevStart)
-            .lte('timestamp', prevEnd);
+          .from('raw_records')
+          .select('*')
+          .eq('user_id', userID)
+          .gte('timestamp', prevStart)
+          .lte('timestamp', prevEnd);
 
         const { data: currData, error: currError } = await supabase
-            .from('raw_records')
-            .select('*')
-            .eq('user_id', userID)
-            .gte('timestamp', currStart)
-            .lte('timestamp', currEnd);
+          .from('raw_records')
+          .select('*')
+          .eq('user_id', userID)
+          .gte('timestamp', currStart)
+          .lte('timestamp', currEnd);
         let prevOutflows = prevData?.filter((transaction) => transaction.amount < 0)
         let prevInflows = prevData?.filter((transaction) => transaction.amount >= 0)
         let currOutflows = currData?.filter((transaction) => transaction.amount < 0)
@@ -212,9 +212,9 @@ const ShowAnalytics = () => {
           setTransactions(data || []);
           setPrevMonthTransactions(prevData || []);
           setCurrMonthTransactions(currData || []);
-          setPrevMonthOutflow(prevOutflows|| []);
+          setPrevMonthOutflow(prevOutflows || []);
           setCurrMonthOutflow(currOutflows || []);
-          setPrevMonthInflow(prevInflows|| []);
+          setPrevMonthInflow(prevInflows || []);
           setCurrMonthInflow(currInflows || []);
         }
       } finally {
@@ -242,10 +242,10 @@ const ShowAnalytics = () => {
       if (acc[category]) {
         acc[category].amount += amount;
       } else {
-        acc[category] = {amount, color};
+        acc[category] = { amount, color };
       }
       return acc;
-    }, {} as { [key: string]: {amount: number, color: string }});
+    }, {} as { [key: string]: { amount: number, color: string } });
 
     return Object.keys(categorySpending).map((category) => ({
       category,
@@ -259,7 +259,16 @@ const ShowAnalytics = () => {
   const dataWithTotalSpending = [...getCategorySpending(), { category: 'Total', amount: getTotalSpending(), color: '', isTotal: true }];
 
   return (
-    <View style={styles.loginContainer}>
+    <View style={styles.transactionContainer}>
+      <Text style={{ color: comparisonColor, textAlign: 'center', marginVertical: 8 }}>{comparisonText}</Text>
+      <Text style={{ color: outColor, textAlign: 'center', marginVertical: 8 }}>{comparisonOutText}</Text>
+      <Text style={{ color: inColor, textAlign: 'center', marginVertical: 8 }}>{comparisonInText}</Text>
+      <View style={styles.topRightButtonContainer}>
+        <Pressable style={styles.viewAllButton} onPress={() => router.push(`MonthlyTotals`)}>
+          <Text style={[styles.viewAllButtonText, { fontSize: 15 }]}>View Graphs</Text>
+        </Pressable>
+      </View>
+      <View style={{ borderBottomColor: '#e3e3e3', borderBottomWidth: 1, marginVertical: 10 }} />
       <View style={styles.buttonGroup}>
         <Pressable style={[styles.timeUnselectButton, timePeriod === 'daily' && styles.timeButton]} onPress={() => handleTimePeriodChange('daily')}>
           <Text style={styles.buttonText}>Today</Text>
@@ -292,24 +301,16 @@ const ShowAnalytics = () => {
           </>
         )}
       </View>
-      <Text style={{ color: comparisonColor, textAlign: 'center', marginVertical: 10 }}>{comparisonText}</Text>
-      <Text style={{ color: outColor, textAlign: 'center', marginVertical: 10 }}>{comparisonOutText}</Text>
-      <Text style={{ color: inColor, textAlign: 'center', marginVertical: 10 }}>{comparisonInText}</Text>
-      <View style={styles.topRightButtonContainer}>
-            <Pressable style={styles.viewAllButton} onPress={() => router.push(`MonthlyTotals`)}>
-            <Text style={[styles.viewAllButtonText, { fontSize: 15 }]}>View Graphs</Text>
-            </Pressable>
-          </View>
       {loading ? (
         <ActivityIndicator size="large" color="#008000" />
       ) : (
-        
+
         <FlatList
           data={dataWithTotalSpending}
           keyExtractor={(item) => item.category}
           renderItem={renderCategorySpending}
         />
-        
+
       )}
     </View>
   );

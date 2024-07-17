@@ -190,7 +190,7 @@ const MonthlyExpenseChart = () => {
                     <Text style={styles.buttonText}>Inflows</Text>
                 </Pressable>
                 <Pressable style={[styles.timeUnselectButton, transactionType === 'net' && styles.timeButton]} onPress={() => setTransactionType("net")}>
-                    <Text style={styles.buttonText}>Net</Text>
+                    <Text style={styles.buttonText}>Net Total</Text>
                 </Pressable>
             </View>
             <ScrollView horizontal>

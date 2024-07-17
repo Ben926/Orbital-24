@@ -138,7 +138,7 @@ const GoalPage = () => {
                                 </TouchableOpacity>
                             </View>
                             <Text style={styles.transactionAmount}>Target Amount: ${item.target_amount}</Text>
-                            <Text style={styles.transactionAmount}>Current Amount: ${item.current_amount}</Text>
+                            <Text style={styles.transactionAmount}>Amount Saved: ${item.current_amount}</Text>
                             <View style={styles.transactionFooter}>
                                 <Text style={styles.transactionTimestamp}>Start Date: {formatTimestamp(item.start_date)}</Text>
                             </View>

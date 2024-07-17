@@ -499,13 +499,13 @@ const styles = StyleSheet.create({
     right: 10,
   },
   analyticsDescription: {
-    fontSize: 28,
+    fontSize: 20,
     color: '#555',
     fontFamily: 'Figtree',
     flex: 1,
   },
   analyticsAmount: {
-    fontSize: 28,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#000',
     fontFamily: 'Figtree'
@@ -514,9 +514,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingLeft: 15,
     paddingRight: 15,
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginVertical: 8,
+    paddingTop: 1,
+    paddingBottom: 1,
+    marginVertical: 5,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 8,
