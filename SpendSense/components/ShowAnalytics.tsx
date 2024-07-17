@@ -5,6 +5,7 @@ import supabase from "@/supabase/supabase";
 import { getSingaporeDate } from "@/utils/getSingaporeDate";
 import { useUser } from '../contexts/UserContext';
 import styles from "@/styles/styles";
+import { router } from "expo-router";
 
 type Transaction = {
   id: string;
@@ -156,14 +157,14 @@ const ShowAnalytics = () => {
     const absDiffOutflows = Math.abs(diffOutflows);
     const absDiffInflows = Math.abs(diffInflows);
     const savedText = diffTotal < 0
-        ? `You have saved $${absDiffTotal.toFixed(2)} less this month so far compared to last month.`
-        : `You have saved $${absDiffTotal.toFixed(2)} more this month so far compared to last month.`;
+        ? `You have saved $${absDiffTotal.toFixed(2)} less this month so far compared to last month. (Net)`
+        : `You have saved $${absDiffTotal.toFixed(2)} more this month so far compared to last month. (Net)`;
     const OutText = diffOutflows <= 0
-        ? `You have spent $${absDiffOutflows.toFixed(2)} more this month so far compared to last month.`
-        : `You have spent $${absDiffOutflows.toFixed(2)} less this month so far compared to last month.`;
+        ? `You have spent $${absDiffOutflows.toFixed(2)} more this month so far compared to last month. (Outflows)`
+        : `You have spent $${absDiffOutflows.toFixed(2)} less this month so far compared to last month.(Outflows)`;
     const InText = diffInflows < 0
-        ? `You have earned $${absDiffInflows.toFixed(2)} less this month so far compared to last month.`
-        : `You have earned $${absDiffInflows.toFixed(2)} more this month so far compared to last month.`;
+        ? `You have earned $${absDiffInflows.toFixed(2)} less this month so far compared to last month. (Inflows)`
+        : `You have earned $${absDiffInflows.toFixed(2)} more this month so far compared to last month. (Inflows)`;
 
     setComparisonText(savedText);
     setComparisonOutText(OutText);
@@ -258,7 +259,7 @@ const ShowAnalytics = () => {
   const dataWithTotalSpending = [...getCategorySpending(), { category: 'Total', amount: getTotalSpending(), color: '', isTotal: true }];
 
   return (
-    <View style={styles.transactionContainer}>
+    <View style={styles.loginContainer}>
       <View style={styles.buttonGroup}>
         <Pressable style={[styles.timeUnselectButton, timePeriod === 'daily' && styles.timeButton]} onPress={() => handleTimePeriodChange('daily')}>
           <Text style={styles.buttonText}>Today</Text>
@@ -294,8 +295,13 @@ const ShowAnalytics = () => {
       <Text style={{ color: comparisonColor, textAlign: 'center', marginVertical: 10 }}>{comparisonText}</Text>
       <Text style={{ color: outColor, textAlign: 'center', marginVertical: 10 }}>{comparisonOutText}</Text>
       <Text style={{ color: inColor, textAlign: 'center', marginVertical: 10 }}>{comparisonInText}</Text>
+      <View style={styles.topRightButtonContainer}>
+            <Pressable style={styles.viewAllButton} onPress={() => router.push(`MonthlyTotals`)}>
+            <Text style={[styles.viewAllButtonText, { fontSize: 15 }]}>View Graphs</Text>
+            </Pressable>
+          </View>
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#008000" />
       ) : (
         
         <FlatList

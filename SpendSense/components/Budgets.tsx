@@ -170,7 +170,7 @@ const BudgetPage = () => {
                         <Text style={styles.welcomeText}>Add a New Budget</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Description"
+                            placeholder="Description (optional)"
                             placeholderTextColor="grey"
                             textAlign="center"
                             value={description}

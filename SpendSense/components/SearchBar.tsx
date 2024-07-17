@@ -44,7 +44,7 @@ const SearchBar = () => {
     setSuggestions([]);
   };
   return (
-    <View style={styles.indexContainer}>
+    <View style={styles.loginContainer}>
         <TextInput
           style={styles.input}
           placeholder="Search for a stock symbol"
@@ -52,7 +52,7 @@ const SearchBar = () => {
           value={query}
           onChangeText={fetchSuggestions}
         />
-        <FlatList
+        {query && <FlatList
           data={suggestions}
           keyExtractor={(item) => item.symbol}
           renderItem={({ item }) => (
@@ -61,7 +61,7 @@ const SearchBar = () => {
             </TouchableOpacity>
           )}
           style={styles.suggestionsList}
-        />
+        />}
       {selectedStock && <StockPrice symbol={selectedStock} />}
     </View>
     
