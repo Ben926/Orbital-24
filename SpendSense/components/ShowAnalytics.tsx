@@ -9,7 +9,7 @@ import { router } from "expo-router";
 
 type Transaction = {
   id: string;
-  date: string;
+  log: string;
   category: string;
   amount: number;
   timestamp: string;

@@ -8,6 +8,7 @@ exports[`renders correctly 1`] = `
         "color": "#11181C",
       },
       {
+        "color": "#333333",
         "fontSize": 16,
         "lineHeight": 24,
       },

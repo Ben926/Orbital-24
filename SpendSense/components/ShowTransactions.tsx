@@ -12,7 +12,7 @@ import { useFetchGoals } from '@/utils/useFetchGoals';
 
 type Transaction = {
   id: string;
-  date: string;
+  log: string;
   category: string;
   amount: number;
   timestamp: string;
@@ -35,7 +35,7 @@ type PieChartData = {
   legendFontSize: number;
 };
 
-const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true }) => {
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true}) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { userID, refreshUserData } = useUser();
   const [loading, setLoading] = useState<boolean>(true);
