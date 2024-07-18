@@ -12,6 +12,7 @@ import { useFetchGoals } from '@/utils/useFetchGoals';
 
 type Transaction = {
   id: string;
+  user_id: string;
   log: string;
   category: string;
   amount: number;
@@ -35,7 +36,7 @@ type PieChartData = {
   legendFontSize: number;
 };
 
-const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true}) => {
+const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate, showChart = true, showAll = true }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { userID, refreshUserData } = useUser();
   const [loading, setLoading] = useState<boolean>(true);
@@ -115,7 +116,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     }, []);
     return formattedData;
   };
-  
+
   const deleteTransaction = async (transactionID: string, transaction_amount: number, transaction_timestamp: string) => {
     setDeleting(true);
     try {
@@ -146,7 +147,6 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
   const categories = Array.from(new Set(transactions.map(transaction => transaction.category)));
 
   const renderItem = ({ item }: { item: Transaction }) => (
-
     <View style={styles.transactionItem}>
       <View style={[styles.colorIndicator, { backgroundColor: item.color }]} />
       <View style={styles.transactionContent}>
@@ -156,42 +156,40 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
             style={styles.deleteButton}
             onPress={() => deleteTransaction(item.id, item.amount, item.timestamp)}
             disabled={deleting}
+            testID={`delete-button-${item.id}`}
           >
             <Text style={styles.deleteButtonText}>x</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.transactionDetails}>
           <Text style={styles.transactionCategory}>{item.category}</Text>
-          <Text style={styles.transactionDate}>{item.date}</Text>
         </View>
         <View style={styles.transactionFooter}>
-
           <Text style={styles.transactionTimestamp}>{formatTimestamp(item.timestamp)}</Text>
           <Text style={styles.transactionAmount}>{item.amount < 0 ? `-$${Math.abs(item.amount)}` : `+$${item.amount}`}</Text>
         </View>
       </View>
     </View>
-
   );
 
   return (
     <View style={styles.transactionContainer}>
       {loading ? (
-        <ActivityIndicator size="large" color="#008000" />
+        <ActivityIndicator size="large" color="#008000" testID="loading-indicator" />
       ) : (
         <>
           {transactions.length !== 0 && (
             <>
               {showChart && <View style={styles.topRightButtonContainer}>
-                <Pressable style={styles.viewAllButton} onPress={() => setHideChart(!hideChart)}>
+                <Pressable style={styles.viewAllButton} onPress={() => setHideChart(!hideChart)} testID="toggle-pie-chart-button">
                   <Text style={styles.viewAllButtonText}>{hideChart ? "Show Pie Chart" : "Hide Pie Chart"}</Text>
                 </Pressable>
               </View>}
               {!hideChart && <TouchableOpacity style={styles.button} onPress={() => setShowInflowPieChart(!showInflowPieChart)}>
-                {<Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>}
+                <Text style={styles.buttonText}>{showInflowPieChart ? "Inflow" : "Outflow"}</Text>
               </TouchableOpacity>}
               {!hideChart && <PieChartComponent data={showInflowPieChart ? inflowPieChartData : outflowPieChartData} />}
-              <TouchableOpacity style={styles.button} onPress={() => setIsFilterModalVisible(true)}>
+              <TouchableOpacity style={styles.button} onPress={() => setIsFilterModalVisible(true)} testID="filter-button">
                 <Text style={styles.buttonText}>{selectedCategory || "Filter"}</Text>
               </TouchableOpacity>
             </>
@@ -216,6 +214,7 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
               selectedValue={selectedCategory}
               onValueChange={(itemValue) => setSelectedCategory(itemValue)}
               style={styles.filterPicker}
+              testID="category-picker"
             >
               <Picker.Item label="" value="" />
               {categories.map(category => (
@@ -250,7 +249,5 @@ const ShowTransactions: React.FC<ShowTransactionsProps> = ({ startDate, endDate,
     </View>
   );
 };
-
-
 
 export default ShowTransactions;
