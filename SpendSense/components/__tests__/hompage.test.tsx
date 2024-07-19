@@ -1,11 +1,12 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import { Picker } from '@react-native-picker/picker';
 import ShowTransactions from '../ShowTransactions';
 import supabase from '@/supabase/supabase';
 import { useUser } from '@/contexts/UserContext';
 import { useFetchBudgets } from '@/utils/useFetchBudgets';
 import { useFetchGoals } from '@/utils/useFetchGoals';
+import Home from "@/app/(pages)/Home";
+import { getSingaporeDate } from '@/utils/getSingaporeDate';
 
 jest.mock('@/supabase/supabase');
 jest.mock('@/contexts/UserContext');
@@ -20,7 +21,7 @@ const mockTransactions = [
     log: 'log1',
     category: 'Food',
     amount: 10,
-    timestamp: '2023-07-10T14:48:00.000Z',
+    timestamp: getSingaporeDate().toISOString(),
     description: 'Lunch',
     color: 'red'
   },
@@ -30,35 +31,33 @@ const mockTransactions = [
     log: 'log2',
     category: 'Transport',
     amount: -5,
-    timestamp: '2023-07-10T15:00:00.000Z',
+    timestamp: getSingaporeDate(new Date(Date.now() - 28 * 60 * 60 * 1000)).toISOString(), // yesterday
     description: 'Bus fare',
     color: 'blue'
-  }
+  },
+  {
+    id: '3',
+    user_id: 'user-1',
+    log: 'log3',
+    category: 'Entertainment',
+    amount: -20,
+    timestamp: getSingaporeDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).toISOString(), // One week ago
+    description: 'Movie ticket',
+    color: 'green'
+  },
+  {
+    id: '4',
+    user_id: 'user-1',
+    log: 'log4',
+    category: 'Groceries',
+    amount: -30,
+    timestamp: getSingaporeDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).toISOString(), // One month ago
+    description: 'Grocery shopping',
+    color: 'yellow'
+  },
+
 ];
 
-const mockGoals = [
-  {
-    id: 'goal-1',
-    user_id: 'user-1',
-    goal_name: 'Save for vacation',
-    target_amount: 1000,
-    current_amount: 200,
-    start_date: '2023-01-01',
-    description: 'Save money for a trip to Bali'
-  }
-];
-
-const mockBudgets = [
-  {
-    id: 'budget-1',
-    user_id: 'user-1',
-    budget_amount: 500,
-    amount_spent: 150,
-    start_date: '2023-07-01',
-    end_date: '2023-07-31',
-    description: 'Monthly food budget'
-  }
-];
 
 const userID = 'user-1';
 
@@ -69,9 +68,9 @@ describe('ShowTransactions', () => {
       setUserID: jest.fn(),
       refreshUserData: false,
       setRefreshUserData: jest.fn(),
-      budgets: mockBudgets,
+      budgets: [],
       setBudgets: jest.fn(),
-      goals: mockGoals,
+      goals: [],
       setGoals: jest.fn(),
       categories: [],
       setCategories: jest.fn(),
@@ -80,14 +79,14 @@ describe('ShowTransactions', () => {
     });
 
     (useFetchBudgets as jest.Mock).mockReturnValue({
-      budgets: mockBudgets,
+      budgets: [],
       updateBudgets: jest.fn(),
       setBudgets: jest.fn(),
       setRefreshUserData: jest.fn()
     });
 
     (useFetchGoals as jest.Mock).mockReturnValue({
-      goals: mockGoals,
+      goals: [],
       updateGoalAmounts: jest.fn(),
       setGoals: jest.fn(),
       setRefreshUserData: jest.fn()
@@ -153,7 +152,7 @@ describe('ShowTransactions', () => {
   });
 
   it('should delete a transaction', async () => {
-    const { getByText, getAllByText} = render(<ShowTransactions startDate="2000-01-01T00:00:00Z" endDate="2100-01-01T00:00:00Z" showChart={true} showAll={true} />);
+    const { getByText, getAllByText } = render(<ShowTransactions startDate="2000-01-01T00:00:00Z" endDate="2100-01-01T00:00:00Z" showChart={true} showAll={true} />);
     await act(async () => {
       await waitFor(() => {
         expect(getByText('Lunch')).toBeTruthy();
@@ -165,4 +164,46 @@ describe('ShowTransactions', () => {
       });
     });
   });
+
+
+  it('should toggle to see all transactions made in that day', async () => {
+    const { getByText, queryByText } = render(<Home />);
+
+    fireEvent.press(getByText('Daily'));
+
+    await waitFor(() => {
+      expect(getByText("Lunch")).toBeTruthy(); // Check only daily transactions are shown
+    });
+  });
+
+  it('should toggle to see all transactions made in that week', async () => {
+    const { getByText, queryByText } = render(<Home />);
+
+    fireEvent.press(getByText('Weekly'));
+
+    await waitFor(() => {
+      expect(getByText("Bus fare")).toBeTruthy(); // Check only weekly transactions are shown
+    });
+  });
+
+  it('should toggle to see all transactions made in that month', async () => {
+    const { getByText, queryByText } = render(<Home />);
+
+    fireEvent.press(getByText('Monthly'));
+
+    await waitFor(() => {
+      expect(getByText("Grocery shopping")).toBeTruthy(); // Check only monthly transactions are shown
+    });
+  });
+
+  it('should toggle to see all transactions made in the manual period', async () => {
+    const { getByText, queryByText } = render(<Home />);
+
+    fireEvent.press(getByText('Manual'));
+
+    await waitFor(() => {
+      expect(getByText("Bus fare")).toBeTruthy();
+    });
+  });
 });
+

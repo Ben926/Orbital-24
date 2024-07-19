@@ -216,10 +216,10 @@ const CreateTransactionForm = () => {
       if (error_raw_records_table || error_categories_table) {
         console.error('Error updating category');
       } else {
+        Alert.alert('Category updated successfully');
         setRefreshUserData(true);
         setEditingCategory(null);
         setNewCategoryName('');
-        Alert.alert('Category updated successfully');
       }
     } catch (err) {
       console.error('Unexpected error updating category:', err);
@@ -236,7 +236,7 @@ const CreateTransactionForm = () => {
     const records_with_category = data || [];
 
     if (records_with_category.length != 0) {
-      Alert.alert("Cannot delete category as there are exsiting records!")
+      Alert.alert("Cannot delete category as there are existing records!")
       return;
     }
 
@@ -248,9 +248,9 @@ const CreateTransactionForm = () => {
       if (error) {
         console.error('Error deleting category:', error);
       } else {
+        Alert.alert('Category deleted successfully');
         setRefreshUserData(true);
         setEditingCategory(null);
-        Alert.alert('Category deleted successfully');
       }
     } catch (err) {
       console.error('Unexpected error deleting category:', err);
