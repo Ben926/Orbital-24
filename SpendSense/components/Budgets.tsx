@@ -43,9 +43,10 @@ const BudgetPage = () => {
         if (error) {
             console.error(error);
             return;
+        } else if (data) {
+            const amount_spent = -data.reduce((sum, transaction) => sum + transaction.amount, 0);
+            return amount_spent;
         }
-        const amount_spent = -data.reduce((sum, transaction) => sum + transaction.amount, 0);
-        return amount_spent;
     };
 
     const addBudget = async () => {
@@ -77,7 +78,7 @@ const BudgetPage = () => {
             if (error) {
                 console.error(error);
             } else {
-                Alert.alert('Success', 'Goal created successfully!');
+                Alert.alert('Success', 'Budget created successfully!');
                 setRefreshUserData(true);
                 setBudgetAmount('');
                 setDescription('');

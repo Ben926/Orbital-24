@@ -45,10 +45,11 @@ const GoalPage = () => {
         if (incomeError || expenseError) {
             console.error(incomeError || expenseError);
             return 0;
-        }
+        } else if (incomeData && expenseData) {{
         const totalIncome = incomeData.reduce((sum, transaction) => sum + transaction.amount, 0);
         const totalExpenses = expenseData.reduce((sum, transaction) => sum + transaction.amount, 0);
         return totalIncome + totalExpenses;
+        }}
     };
 
     const addGoal = async () => {
