@@ -292,12 +292,14 @@ const ShowAnalytics = () => {
               mode="date"
               display="default"
               onChange={onManualStartDateChange}
+              testID = "manualStartDatePicker"
             />
             <DateTimePicker
               value={manualEndDate}
               mode="date"
               display="default"
               onChange={onManualEndDateChange}
+              testID = "manualEndDatePicker"
             />
           </>
         )}

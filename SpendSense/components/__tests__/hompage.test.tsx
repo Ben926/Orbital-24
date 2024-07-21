@@ -31,7 +31,7 @@ const mockTransactions = [
     log: 'log2',
     category: 'Transport',
     amount: -5,
-    timestamp: getSingaporeDate(new Date(Date.now() - 28 * 60 * 60 * 1000)).toISOString(), // yesterday
+    timestamp: getSingaporeDate(new Date(Date.now() - 28 * 60 * 60 * 1000)).toISOString(), 
     description: 'Bus fare',
     color: 'blue'
   },
@@ -41,7 +41,7 @@ const mockTransactions = [
     log: 'log3',
     category: 'Entertainment',
     amount: -20,
-    timestamp: getSingaporeDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).toISOString(), // One week ago
+    timestamp: getSingaporeDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).toISOString(), 
     description: 'Movie ticket',
     color: 'green'
   },
@@ -51,7 +51,7 @@ const mockTransactions = [
     log: 'log4',
     category: 'Groceries',
     amount: -30,
-    timestamp: getSingaporeDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).toISOString(), // One month ago
+    timestamp: getSingaporeDate(new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).toISOString(), 
     description: 'Grocery shopping',
     color: 'yellow'
   },
