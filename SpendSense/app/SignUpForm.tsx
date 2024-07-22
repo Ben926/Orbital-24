@@ -23,7 +23,7 @@ const SignUpForm = () => {
     if (error) {
       Alert.alert("Signup Error", error.message);
     } else {
-      const userId = data.user.id;
+      const userID = data.user.id;
       const defaultCategories = [
         { name: 'Food', color: '#FF6347' },         
         { name: 'Transport', color: '#FFD700' },    
@@ -34,28 +34,21 @@ const SignUpForm = () => {
         { name: 'Income', color: '#00FF7F' }   
       ];
 
-      const { error: tableError } = await supabase
-        .rpc('create_user_table', { user_id: userId });
-
       const { error: categoryError } = await supabase
         .from('categories')
         .insert(defaultCategories.map(category => ({
-          user_id: userId,
+          user_id: userID,
           log: getSingaporeDate(),
           name: category.name,
           color: category.color,
           outflow: category.name == "Income" ? false : true 
         })));
 
-      if (tableError) {
-        Alert.alert("Error", tableError.message);
-      }
-
       if (categoryError) {
         Alert.alert("Error", categoryError.message);
       }
       
-      Alert.alert("Success!", "Account created successfully")
+      Alert.alert("Success!", "Account created successfully.")
     }
   };
 

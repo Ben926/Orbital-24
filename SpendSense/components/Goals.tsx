@@ -13,7 +13,7 @@ const GoalPage = () => {
     const { goals, setRefreshUserData } = useFetchGoals();
     const [modalVisible, setModalVisible] = useState(false);
     const [newGoal, setNewGoal] = useState('');
-    const [budgetAmount, setBudgetAmount] = useState('');
+    const [goalAmount, setGoalAmount] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState<Date>(new Date());
     const onDateChange = (event: any, selectedDate?: Date) => {
@@ -53,15 +53,15 @@ const GoalPage = () => {
     };
 
     const addGoal = async () => {
-        if (!budgetAmount || !newGoal) {
+        if (!goalAmount || !newGoal) {
             Alert.alert('Please fill in the goal and amount!')
 
         }
-        else if (isNaN(parseFloat(budgetAmount))) {
+        else if (isNaN(parseFloat(goalAmount))) {
             Alert.alert('Key in a valid amount')
 
         }
-        else if (newGoal.trim() && budgetAmount.trim()) {
+        else if (newGoal.trim() && goalAmount.trim()) {
             const calculatedCurrentAmount = await calculateCurrentAmount(getSingaporeDate(date));
             const { data, error } = await supabase
                 .from(`spending_goals`)
@@ -70,7 +70,7 @@ const GoalPage = () => {
                         user_id: userID,
                         goal_name: newGoal,
                         log: getSingaporeDate(),
-                        target_amount: parseFloat(budgetAmount),
+                        target_amount: parseFloat(goalAmount),
                         current_amount: calculatedCurrentAmount,
                         start_date: getSingaporeDate(date),
                         description: description
@@ -85,7 +85,7 @@ const GoalPage = () => {
                 Alert.alert('Success', 'Goal created successfully!');
                 setRefreshUserData(true);
                 setNewGoal('');
-                setBudgetAmount('');
+                setGoalAmount('');
                 setDescription('');
                 setModalVisible(false);
                 setDate(new Date());
@@ -199,8 +199,8 @@ const GoalPage = () => {
                             keyboardType="numeric"
                             placeholderTextColor="grey"
                             textAlign="center"
-                            value={budgetAmount}
-                            onChangeText={setBudgetAmount}
+                            value={goalAmount}
+                            onChangeText={setGoalAmount}
                         />
                         <View style={styles.datetimepicker}>
                             <DateTimePicker

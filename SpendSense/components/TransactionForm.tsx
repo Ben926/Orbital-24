@@ -150,11 +150,7 @@ const CreateTransactionForm = () => {
     }
 
     if (existingCategory) {
-      if (existingCategory.name === 'KSI') {
-        Alert.alert('Error', 'There can never be 2 KSIs.');
-      } else {
-        Alert.alert('Error', 'Category already exists');
-      }
+      Alert.alert('Error', 'Category already exists');
       return;
     }
 
@@ -193,11 +189,7 @@ const CreateTransactionForm = () => {
     }
 
     if (existingCategory) {
-      if (existingCategory.name === 'KSI') {
-        Alert.alert('Error', 'There can never be 2 KSIs.');
-      } else {
-        Alert.alert('Error', 'Category already exists');
-      }
+      Alert.alert('Error', 'Category already exists');
       return;
     }
 
